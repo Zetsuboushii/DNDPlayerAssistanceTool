@@ -17,7 +17,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -97,25 +96,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-
-sealed class Screen(val route: String, val title: String) {
-    object Home : Screen("home", "Home")
-    object Search : Screen("search", "Spell Search")
-    object SpellBook : Screen("spellbook", "Spell Book")
-}
-
-@Composable
-fun Home() {
-    Text(text = "Home")
-}
-
-@Composable
-fun Search() {
-    Text(text = "Search")
-}
-
-@Composable
-fun SpellBook() {
-    Text(text = "Spell Book")
 }
