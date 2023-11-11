@@ -1,94 +1,121 @@
 package de.zetsu.dndplayerassistancetool
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import de.zetsu.dndplayerassistancetool.ui.theme.DndplayerassistancetoolTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             DndplayerassistancetoolTheme {
+
+                val items = listOf(
+                    Screen.Home,
+                    Screen.Search,
+                    Screen.SpellBook
+                )
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
-                    var selectedItem by remember { mutableStateOf(0) }
-                    val items = listOf("Home", "All Spells", "My Spell Book")
-
-                    val homeIntent = Intent(this, MainActivity::class.java)
-                    val searchIntent = Intent(this, SearchActivity::class.java)
-                    val spellBookIntent = Intent(this, SpellBookActivity::class.java)
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                    ) {
-                        Text(text = "Home")
-                        Spacer(
-                            modifier = Modifier
-                                .weight(1f)
-                        )
-                        Row {
+                    val navController = rememberNavController()
+                    Scaffold(
+                        bottomBar = {
                             NavigationBar {
-                                items.forEachIndexed { index, item ->
+                                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                                val currentDestination = navBackStackEntry?.destination
+                                items.forEach { screen ->
                                     NavigationBarItem(
-                                        selected = selectedItem == index,
+                                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                                         onClick = {
-                                            selectedItem = index
-                                            when (index) {
-                                                0 -> startActivity(homeIntent)
-                                                1 -> startActivity(searchIntent)
-                                                2 -> startActivity(spellBookIntent)
+                                            navController.navigate(screen.route) {
+                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
                                             }
                                         },
-                                        label = { Text(item) },
                                         icon = {
                                             Icon(
-                                                when (index) {
-                                                    0 -> Icons.Filled.Home
-                                                    1 -> Icons.Filled.List
-                                                    2 -> Icons.Filled.Create
+                                                when (screen.route) {
+                                                    "home" -> Icons.Filled.Home
+                                                    "search" -> Icons.Filled.Search
+                                                    "spellbook" -> Icons.Filled.Create
                                                     else -> {
                                                         Icons.Filled.Build
                                                     }
                                                 },
-                                                contentDescription = item
+                                                contentDescription = null
                                             )
-                                        }
+                                        },
+                                        label = { Text(screen.title) }
                                     )
                                 }
                             }
+                        }
+                    ) { innerPadding ->
+                        NavHost(
+                            navController,
+                            startDestination = Screen.Home.route,
+                            Modifier.padding(innerPadding)
+                        ) {
+                            composable(Screen.Home.route) { Home() }
+                            composable(Screen.Search.route) { Search() }
+                            composable(Screen.SpellBook.route) { SpellBook() }
                         }
                     }
                 }
             }
         }
     }
+}
+
+sealed class Screen(val route: String, val title: String) {
+    object Home : Screen("home", "Home")
+    object Search : Screen("search", "Spell Search")
+    object SpellBook : Screen("spellbook", "Spell Book")
+}
+
+@Composable
+fun Home() {
+    Text(text = "Home")
+}
+
+@Composable
+fun Search() {
+    Text(text = "Search")
+}
+
+@Composable
+fun SpellBook() {
+    Text(text = "Spell Book")
 }
