@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "de.zetsu.dndplayerassistancetool"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "de.zetsu.dndplayerassistancetool"
         minSdk = 33
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -66,4 +66,6 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation("androidx.compose.material3:material3:1.1.2")
+
 }
