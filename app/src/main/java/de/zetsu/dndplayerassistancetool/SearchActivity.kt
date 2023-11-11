@@ -28,7 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import de.zetsu.dndplayerassistancetool.ui.theme.DndplayerassistancetoolTheme
 
-class MainActivity : ComponentActivity() {
+class SearchActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxHeight()
                     ) {
-                        Text(text = "Home")
+                        Text(text = "Search")
                         Spacer(
                             modifier = Modifier
                                 .weight(1f)
