@@ -19,18 +19,6 @@ private fun parseDamageType(json: JSONObject?): DamageType {
     )
 }
 
-private fun parseAoEType(json: JSONObject?): Pair<Int, AoEType> {
-    val size = json?.optInt("size") ?: 0
-    val type = when (json?.optString("type")) {
-        "sphere" -> AoEType.SPHERE
-        "cone" -> AoEType.CONE
-        "cylinder" -> AoEType.CYLINDER
-        "line" -> AoEType.LINE
-        "cube" -> AoEType.CUBE
-        else -> AoEType.SPHERE
-    }
-    return Pair(size, type)
-}
 
 private fun parseClasses(jsonArray: JSONArray?): ArrayList<Class> {
     val classes = arrayListOf<Class>()
@@ -61,35 +49,18 @@ data class SpellDetail (
     //var higherLevel: ArrayList<String>,
     var higherLevel: String?,
     var range: String,
-    var aoe: Pair<Int, AoEType>?,
+    //var aoe: AreaOfEffect,
     var ritual: Boolean,
     var duration: String,
     var concentration: Boolean,
     var castTime: String,
     var attackType: String,
-    //var damageType: DamageType,
+    //var damage: Damage,
     var school: School,
     var classes: ArrayList<Class>
 
-    /*TODO damageType is not a standalone it is in damage see fireball
-    "damage": {
-        "damage_type": {
-        "index": "fire",
-        "name": "Fire",
-        "url": "/api/damage-types/fire"
-        },
-        "damage_at_slot_level": {
-        "3": "8d6",
-        "4": "9d6",
-        "5": "10d6",
-        "6": "11d6",
-        "7": "12d6",
-        "8": "13d6",
-        "9": "14d6"
-        }
-    },
-    */
-
+    //TODO create parse Damage with new Damage data class
+    //TODO create an new parseAoEType with the new AoE data class
     //TODO parse dec and higher_level not as strings but as String ArrayList
 
     ) {
@@ -104,7 +75,7 @@ data class SpellDetail (
             //json.opt("desc") as ArrayList<String>,
             //json.opt("higherLevel") as ArrayList<String>,
             json.optString("range"),
-            parseAoEType(json.optJSONObject("area_of_effect")),
+            //parseAoEType(json.optJSONObject("area_of_effect")),
             json.optBoolean("ritual"),
             json.optString("duration"),
             json.optBoolean("concentration"),

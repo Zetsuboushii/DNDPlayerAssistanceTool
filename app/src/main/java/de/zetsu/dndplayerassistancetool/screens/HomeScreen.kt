@@ -36,7 +36,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 @SuppressLint("SimpleDateFormat")
-@Preview
 @Composable
 fun Home() {
     Column {
@@ -75,7 +74,12 @@ fun Home() {
                 value = text,
                 onValueChange = { text = it },
                 placeholder = { Text(text = "Search for Spells...") },
-                leadingIcon = { Icon(imageVector = Icons.Filled.Search, contentDescription = null) }
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_search),
+                        contentDescription = null
+                    )
+                }
             )
 
         }
@@ -92,8 +96,7 @@ fun Home() {
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
                 ),
-                modifier = Modifier
-                    .width(300.dp)
+                modifier = Modifier.width(300.dp)
             ) {
                 Column(
                     modifier = Modifier
@@ -113,10 +116,17 @@ fun Home() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Text(
-                        text = SimpleDateFormat("dd.MM.yyyy").format(Date()),
-                        fontSize = 30.sp
-                    )
+                    Row {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_event_fill),
+                            contentDescription = null,
+                            modifier = Modifier.size(40.dp)
+                        )
+                        Text(
+                            text = SimpleDateFormat("dd.MM.yyyy").format(Date()),
+                            fontSize = 30.sp
+                        )
+                    }
                 }
             }
         }

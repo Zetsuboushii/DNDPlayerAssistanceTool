@@ -3,12 +3,11 @@ package de.zetsu.dndplayerassistancetool.dataclasses
 import org.json.JSONObject
 
 data class Spell(
-
     var index: String,
     var name: String,
-    var url: String){
-
-    constructor(json: JSONObject):
+    var url: String
+) {
+    constructor(json: JSONObject) :
             this(
                 json.optString("index"),
                 json.optString("name"),

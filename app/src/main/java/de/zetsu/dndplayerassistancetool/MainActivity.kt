@@ -19,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -68,14 +69,16 @@ class MainActivity : ComponentActivity() {
                                         },
                                         icon = {
                                             Icon(
-                                                when (screen.route) {
-                                                    "home" -> Icons.Filled.Home
-                                                    "search" -> Icons.Filled.Search
-                                                    "spellbook" -> Icons.Filled.Create
-                                                    else -> {
-                                                        Icons.Filled.Build
+                                                painter = painterResource(
+                                                    when (screen.route) {
+                                                        "home" -> R.drawable.ic_home_fill
+                                                        "search" -> R.drawable.ic_search2
+                                                        "spellbook" -> R.drawable.ic_book_fill
+                                                        else -> {
+                                                            R.drawable.ic_taunt_fill
+                                                        }
                                                     }
-                                                },
+                                                ),
                                                 contentDescription = null
                                             )
                                         },
