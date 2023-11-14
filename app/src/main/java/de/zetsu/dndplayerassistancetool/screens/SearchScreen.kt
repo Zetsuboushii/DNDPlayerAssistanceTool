@@ -1,5 +1,7 @@
 package de.zetsu.dndplayerassistancetool.screens
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,37 +25,70 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import de.zetsu.dndplayerassistancetool.SpellProvider
+import de.zetsu.dndplayerassistancetool.dataclasses.Spell
 import de.zetsu.dndplayerassistancetool.ui.theme.Purple80
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
-@Preview
 @Composable
-fun Search() {
+fun Search(context: Context) {
 
-    val items = listOf<String>(
-        "Divine Headache",
-        "Smite",
-        "Explosive Diarrhea",
-        "Divine Punishment",
-        "Gömböc"
-    )
+    var spellList = remember {mutableListOf<Spell>()}
+
+    val spellProvider = SpellProvider(context)
+    val items = listOf<String>("Divine Headache", "Smite", "Explosive Diarrhea")
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    Spacer(modifier = Modifier.size(10.dp))
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner){
+        val observer = LifecycleEventObserver { _, event ->
+            when(event) {
+                Lifecycle.Event.ON_CREATE -> {
+                    spellProvider.loadSpellList { spells ->
+                        Log.d("SpellsLog", spells.toString())
+                        println(spells[2].name)
+                        spellList.clear()
+                        spellList.addAll(spells)
+                    }
+                    println("on create")
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    println("on destroy")
+                }
+                else -> {}
+            }
+         }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    println(spellList.toString())
+    // TODO: Check why callback and println is called multible times only if callback is done
 
     LazyColumn(
         state = listState
