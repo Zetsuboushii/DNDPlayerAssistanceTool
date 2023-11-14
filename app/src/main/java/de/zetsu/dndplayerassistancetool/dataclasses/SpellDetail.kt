@@ -16,7 +16,7 @@ data class SpellDetail(
     var concentration: Boolean,
     var castTime: String,
     var attackType: String,
-    var damageType: DamageType,
+    var damage: Damage,
     var school: School,
     var classes: ArrayList<Class>
 ) {
@@ -35,7 +35,7 @@ data class SpellDetail(
                 json.optBoolean("concentration"),
                 json.optString("castTime"),
                 json.optString("attackType"),
-                json.opt("damageType") as DamageType,
+                json.opt("damageType") as Damage,
                 json.opt("school") as School,
                 json.opt("classes") as ArrayList<Class>
             )
