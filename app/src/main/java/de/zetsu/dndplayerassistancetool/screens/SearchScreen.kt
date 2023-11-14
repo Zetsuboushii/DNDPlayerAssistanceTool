@@ -43,14 +43,12 @@ import de.zetsu.dndplayerassistancetool.dataclasses.Spell
 import de.zetsu.dndplayerassistancetool.ui.theme.Purple80
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Search(context: Context) {
 
     val spellList = remember { mutableListOf<Spell>() }
 
     val spellProvider = SpellProvider(context)
-    val items = listOf<String>("Divine Headache", "Smite", "Explosive Diarrhea")
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -116,6 +114,7 @@ fun Search(context: Context) {
             }
         }
 
+        /*
         for (i in 1 until 10) {
             stickyHeader {
                 Row(
@@ -127,29 +126,31 @@ fun Search(context: Context) {
                 }
             }
 
-            items(items) {
-                Box(
-                    modifier = Modifier
-                        .background(Color.White)
-                ) {
-                    ElevatedCard(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        Text(
-                            text = it,
-                            modifier = Modifier
-                                .padding(5.dp)
-                        )
-                    }
-                }
+         */
 
+        items(spellList) {
+            Box(
+                modifier = Modifier
+                    .background(Color.White)
+            ) {
+                ElevatedCard(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    Text(
+                        text = it.name,
+                        modifier = Modifier
+                            .padding(5.dp)
+                    )
+                }
             }
+
         }
+
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
