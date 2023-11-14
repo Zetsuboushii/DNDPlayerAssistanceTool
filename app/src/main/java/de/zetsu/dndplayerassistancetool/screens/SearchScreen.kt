@@ -2,7 +2,6 @@ package de.zetsu.dndplayerassistancetool.screens
 
 import android.content.Context
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
@@ -33,26 +30,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import de.zetsu.dndplayerassistancetool.R
 import de.zetsu.dndplayerassistancetool.SpellProvider
 import de.zetsu.dndplayerassistancetool.dataclasses.Spell
-import de.zetsu.dndplayerassistancetool.ui.theme.Purple80
 import kotlinx.coroutines.launch
 
 @Composable
 fun Search(context: Context) {
-
+    // API call
     val spellList = remember { mutableListOf<Spell>() }
-
     val spellProvider = SpellProvider(context)
-
-    val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
@@ -85,6 +78,11 @@ fun Search(context: Context) {
     println(spellList.toString())
     // TODO: Check why callback and println is called multiple times only if callback is done
 
+
+    // spell cards + search bar
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
     LazyColumn(
         state = listState
     ) {
@@ -103,7 +101,7 @@ fun Search(context: Context) {
                     onValueChange = { text = it },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Filled.Search,
+                            painter = painterResource(R.drawable.ic_search),
                             contentDescription = null
                         )
                     },
@@ -142,9 +140,7 @@ fun Search(context: Context) {
                         .padding(8.dp)
                 ) {
                     Text(
-                        text = it.name,
-                        modifier = Modifier
-                            .padding(5.dp)
+                        text = it.name, modifier = Modifier.padding(5.dp)
                     )
                 }
             }
@@ -153,6 +149,7 @@ fun Search(context: Context) {
 
     }
 
+    // back to top floating action button
     Box(modifier = Modifier.fillMaxSize()) {
         FloatingActionButton(
             onClick = {
@@ -164,7 +161,10 @@ fun Search(context: Context) {
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
         ) {
-            Text(text = "Go to top")
+            Icon(
+                painter = painterResource(R.drawable.ic_arrowup),
+                contentDescription = null
+            )
         }
     }
 
