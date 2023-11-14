@@ -88,7 +88,8 @@ class MainActivity : ComponentActivity() {
                         NavHost(
                             navController,
                             startDestination = Screen.Home.route,
-                            Modifier.padding(innerPadding)
+                            Modifier
+                                .padding(innerPadding)
                         ) {
                             composable(Screen.Home.route) { Home() }
                             composable(Screen.Search.route) { Search(this@MainActivity) }
