@@ -7,11 +7,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -27,18 +25,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -52,7 +47,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Search(context: Context) {
 
-    var spellList = remember {mutableListOf<Spell>()}
+    val spellList = remember { mutableListOf<Spell>() }
 
     val spellProvider = SpellProvider(context)
     val items = listOf<String>("Divine Headache", "Smite", "Explosive Diarrhea")
@@ -62,9 +57,9 @@ fun Search(context: Context) {
 
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
-    DisposableEffect(lifecycleOwner){
+    DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            when(event) {
+            when (event) {
                 Lifecycle.Event.ON_CREATE -> {
                     spellProvider.loadSpellList { spells ->
                         Log.d("SpellsLog", spells.toString())
@@ -74,12 +69,14 @@ fun Search(context: Context) {
                     }
                     println("on create")
                 }
+
                 Lifecycle.Event.ON_DESTROY -> {
                     println("on destroy")
                 }
+
                 else -> {}
             }
-         }
+        }
         lifecycleOwner.lifecycle.addObserver(observer)
 
         onDispose {
@@ -88,7 +85,7 @@ fun Search(context: Context) {
     }
 
     println(spellList.toString())
-    // TODO: Check why callback and println is called multible times only if callback is done
+    // TODO: Check why callback and println is called multiple times only if callback is done
 
     LazyColumn(
         state = listState
