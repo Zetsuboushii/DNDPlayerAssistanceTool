@@ -67,6 +67,9 @@ fun Search(context: Context) {
                         spellList.clear()
                         spellList.addAll(spells)
                     }
+                    spellProvider.loadSpellDetails("fireball") { spellDetail ->
+                        Log.d("SpellDetailLog", spellDetail.toString())
+                    }
                     println("on create")
                 }
 

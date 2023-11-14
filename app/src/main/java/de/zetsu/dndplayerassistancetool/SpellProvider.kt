@@ -6,6 +6,7 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import de.zetsu.dndplayerassistancetool.dataclasses.Spell
+import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 
 class SpellProvider(private val context: Context) {
 
@@ -21,6 +22,20 @@ class SpellProvider(private val context: Context) {
                 }.toList()
 
                 callback.invoke(spells)
+            },
+            { error ->
+                Log.d("APILog", "Error loading spell list: ${error.message}")})
+
+        val queue = Volley.newRequestQueue(context)
+        queue.add(jsonRequest)
+    }
+
+    fun loadSpellDetails(index: String, callback: (SpellDetail) -> Unit){
+        val jsonRequest = JsonObjectRequest(
+            Request.Method.GET, url.plus("/").plus(index), null,
+            {response ->
+                println(response)
+                callback.invoke(SpellDetail(response))
             },
             { error ->
                 Log.d("APILog", "Error loading spell list: ${error.message}")})
