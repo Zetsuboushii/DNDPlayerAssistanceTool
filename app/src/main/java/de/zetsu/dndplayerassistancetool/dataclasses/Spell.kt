@@ -40,5 +40,4 @@ data class Spell (
             json.opt("school") as School,
             json.opt("classes") as ArrayList<Class>
         )
-
 }
