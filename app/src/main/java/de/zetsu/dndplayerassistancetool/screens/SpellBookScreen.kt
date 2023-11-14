@@ -5,5 +5,5 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun SpellBook() {
-    Text(text = "Spell Book")
+    Text(text = "SpellDetail Book")
 }
