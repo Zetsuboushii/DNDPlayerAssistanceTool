@@ -91,7 +91,7 @@ class MainActivity : ComponentActivity() {
                             Modifier.padding(innerPadding)
                         ) {
                             composable(Screen.Home.route) { Home() }
-                            composable(Screen.Search.route) { Search() }
+                            composable(Screen.Search.route) { Search(this@MainActivity) }
                             composable(Screen.SpellBook.route) { SpellBook() }
                         }
                     }
