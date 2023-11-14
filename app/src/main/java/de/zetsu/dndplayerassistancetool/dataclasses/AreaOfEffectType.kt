@@ -1,5 +1,5 @@
 package de.zetsu.dndplayerassistancetool.dataclasses
 
-enum class AoEType {
+enum class AreaOfEffectType {
     SPHERE, CONE, CYLINDER, LINE, CUBE
 }
