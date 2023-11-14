@@ -14,13 +14,14 @@ fun Search() {
     val items = listOf<String>("Divine Headache", "Smite", "Explosive Diarrhea")
 
     LazyColumn {
-        for (i in 1 until 10)
-        stickyHeader {
-            Text(text = "SL $i")
-        }
+        for (i in 1 until 10) {
+            stickyHeader {
+                Text(text = "SL $i")
+            }
 
-        items(items) {
-
+            items(items) {
+                Text(text = it)
+            }
         }
     }
 

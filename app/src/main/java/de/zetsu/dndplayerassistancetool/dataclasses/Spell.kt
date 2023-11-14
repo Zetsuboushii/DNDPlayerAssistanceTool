@@ -42,7 +42,3 @@ data class Spell (
         )
 
 }
-
-enum class AoEType {
-    SPHERE, CONE, CYLINDER, LINE, CUBE
-}
