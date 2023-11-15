@@ -116,7 +116,9 @@ fun Home() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Row {
+                    Row (
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_event_fill),
                             contentDescription = null,

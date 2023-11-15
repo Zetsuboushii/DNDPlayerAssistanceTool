@@ -53,14 +53,20 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         bottomBar = {
                             NavigationBar {
-                                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                                val navBackStackEntry by navController
+                                    .currentBackStackEntryAsState()
                                 val currentDestination = navBackStackEntry?.destination
                                 items.forEach { screen ->
                                     NavigationBarItem(
-                                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                                        selected =
+                                        currentDestination?.hierarchy?.any {
+                                            it.route == screen.route
+                                        } == true,
                                         onClick = {
                                             navController.navigate(screen.route) {
-                                                popUpTo(navController.graph.findStartDestination().id) {
+                                                popUpTo(
+                                                    navController.graph.findStartDestination().id
+                                                ) {
                                                     saveState = true
                                                 }
                                                 launchSingleTop = true
@@ -74,9 +80,7 @@ class MainActivity : ComponentActivity() {
                                                         "home" -> R.drawable.ic_home_fill
                                                         "search" -> R.drawable.ic_search2
                                                         "spellbook" -> R.drawable.ic_book_fill
-                                                        else -> {
-                                                            R.drawable.ic_taunt_fill
-                                                        }
+                                                        else -> R.drawable.ic_taunt_fill
                                                     }
                                                 ),
                                                 contentDescription = null
