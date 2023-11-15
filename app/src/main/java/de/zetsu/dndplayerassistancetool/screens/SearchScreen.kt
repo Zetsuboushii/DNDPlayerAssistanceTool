@@ -38,13 +38,13 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import de.zetsu.dndplayerassistancetool.R
 import de.zetsu.dndplayerassistancetool.SpellProvider
-import de.zetsu.dndplayerassistancetool.dataclasses.Spell
+import de.zetsu.dndplayerassistancetool.dataclasses.SpellListItem
 import kotlinx.coroutines.launch
 
 @Composable
 fun Search(context: Context) {
     // API call
-    val spellList = remember { mutableListOf<Spell>() }
+    val spellListItemList = remember { mutableListOf<SpellListItem>() }
     val spellProvider = SpellProvider(context)
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
@@ -55,8 +55,8 @@ fun Search(context: Context) {
                     spellProvider.loadSpellList { spells ->
                         Log.d("SpellsLog", spells.toString())
                         println(spells[2].name)
-                        spellList.clear()
-                        spellList.addAll(spells)
+                        spellListItemList.clear()
+                        spellListItemList.addAll(spells)
                     }
                     spellProvider.loadSpellDetails("fireball") { spellDetail ->
                         Log.d("SpellDetailLog", spellDetail.toString())
@@ -78,7 +78,7 @@ fun Search(context: Context) {
         }
     }
 
-    println(spellList.toString())
+    println(spellListItemList.toString())
     // TODO: Check why callback and println is called multiple times only if callback is done
 
 
@@ -129,7 +129,7 @@ fun Search(context: Context) {
 
          */
 
-        items(spellList) {
+        items(spellListItemList) {
             Box(
                 modifier = Modifier
                     .background(Color.White)

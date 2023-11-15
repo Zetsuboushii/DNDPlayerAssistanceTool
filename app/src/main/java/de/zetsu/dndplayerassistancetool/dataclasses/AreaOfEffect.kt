@@ -4,3 +4,4 @@ data class AreaOfEffect(
     var size: Int,
     var type: AreaOfEffectType
 )
+
