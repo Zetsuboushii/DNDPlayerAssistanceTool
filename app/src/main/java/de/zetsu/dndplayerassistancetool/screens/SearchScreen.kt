@@ -38,6 +38,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import de.zetsu.dndplayerassistancetool.R
 import de.zetsu.dndplayerassistancetool.SpellProvider
+import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellListItem
 import kotlinx.coroutines.launch
 
@@ -45,6 +46,7 @@ import kotlinx.coroutines.launch
 fun Search(context: Context) {
     // API call
     val spellListItemList = remember { mutableListOf<SpellListItem>() }
+    val spellDetailList = remember { mutableListOf<SpellDetail>() }
     val spellProvider = SpellProvider(context)
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
@@ -52,16 +54,20 @@ fun Search(context: Context) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
+                    //TODO: Only enter for() if SpellList is fully loaded
+                    //TODO: Add Shadow load
                     spellProvider.loadSpellList { spells ->
                         Log.d("SpellsLog", spells.toString())
-                        println(spells[2].name)
                         spellListItemList.clear()
                         spellListItemList.addAll(spells)
+                        //for (spell in spellListItemList) {      //don't know if this really works but it is slow
+                        //    spellProvider.loadSpellDetails(spell.index) { spellDetail ->
+                        //        Log.d("SpellDetail: ${spell.name}", spellDetail.toString())
+                        //        spellDetailList.add(spellDetail)
+                        //    }
+                        //}
                     }
-                    spellProvider.loadSpellDetails("fireball") { spellDetail ->
-                        Log.d("SpellDetailLog", spellDetail.toString())
-                    }
-                    println("on create")
+
                 }
 
                 Lifecycle.Event.ON_DESTROY -> {
@@ -78,8 +84,6 @@ fun Search(context: Context) {
         }
     }
 
-    println(spellListItemList.toString())
-    // TODO: Check why callback and println is called multiple times only if callback is done
 
 
     // spell cards + search bar
