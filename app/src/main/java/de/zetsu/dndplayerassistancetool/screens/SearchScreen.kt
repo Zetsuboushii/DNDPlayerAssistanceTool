@@ -1,6 +1,7 @@
 package de.zetsu.dndplayerassistancetool.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,24 +32,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import de.zetsu.dndplayerassistancetool.R
-import de.zetsu.dndplayerassistancetool.dataclasses.AreaOfEffect
-import de.zetsu.dndplayerassistancetool.dataclasses.AreaOfEffectType
-import de.zetsu.dndplayerassistancetool.dataclasses.Class
-import de.zetsu.dndplayerassistancetool.dataclasses.Damage
-import de.zetsu.dndplayerassistancetool.dataclasses.DamageType
-import de.zetsu.dndplayerassistancetool.dataclasses.School
+import de.zetsu.dndplayerassistancetool.SpellProvider
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
+import de.zetsu.dndplayerassistancetool.dataclasses.SpellListItem
 import kotlinx.coroutines.launch
 
 @Composable
 fun Search(context: Context) {
-    /*
     // API call
-    val spellList = remember { mutableListOf<Spell>() }
+    val spellListItemList = remember { mutableListOf<SpellListItem>() }
+    val spellDetailList = remember { mutableListOf<SpellDetail>() }
     val spellProvider = SpellProvider(context)
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
@@ -55,13 +57,20 @@ fun Search(context: Context) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
+                    //TODO: Only enter for() if SpellList is fully loaded
+                    //TODO: Add Shadow load
                     spellProvider.loadSpellList { spells ->
                         Log.d("SpellsLog", spells.toString())
-                        println(spells[2].name)
-                        spellList.clear()
-                        spellList.addAll(spells)
+                        spellListItemList.clear()
+                        spellListItemList.addAll(spells)
+                        for (spell in spellListItemList) {
+                            spellProvider.loadSpellDetails(spell.index) { spellDetail ->
+                                Log.d("SpellDetail: ${spell.name}", spellDetail.toString())
+                                spellDetailList.add(spellDetail)
+                            }
+                        }
                     }
-                    println("on create")
+
                 }
 
                 Lifecycle.Event.ON_DESTROY -> {
@@ -78,31 +87,7 @@ fun Search(context: Context) {
         }
     }
 
-    println(spellList.toString())
-    // TODO: Check why callback and println is called multiple times only if callback is done
-    */
 
-
-    val spellList = listOf<SpellDetail>(
-        SpellDetail(
-            "divine_punishment",
-            "divine_punishment",
-            "Divine Punishment",
-            7,
-            "Divine Punishment ascends from the heavens to strike a foe.",
-            "",
-            "150 feet",
-            AreaOfEffect(30, AreaOfEffectType.SPHERE),
-            true,
-            "Instantaneous",
-            false,
-            "1 action",
-            "",
-            Damage(DamageType("radiant", "Radiant", "radiant"), ""),
-            School("evocation", "Evocation", "evocation"),
-            arrayListOf(Class("cleric", "Cleric", "cleric"))
-        )
-    )
     // spell cards + search bar
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -145,7 +130,7 @@ fun Search(context: Context) {
          */
 
         // spell cards
-        items(spellList) {
+        items(spellListItemList) {
             Box(modifier = Modifier.background(Color.White)) {
                 ElevatedCard(
                     colors = CardDefaults.cardColors(

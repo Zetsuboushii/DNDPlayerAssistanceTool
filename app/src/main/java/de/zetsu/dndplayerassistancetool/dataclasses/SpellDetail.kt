@@ -1,5 +1,6 @@
 package de.zetsu.dndplayerassistancetool.dataclasses
 
+import de.zetsu.dndplayerassistancetool.SpellDetailParser
 import org.json.JSONObject
 
 data class SpellDetail(
@@ -7,10 +8,10 @@ data class SpellDetail(
     var url: String,
     var name: String,
     var level: Int,
-    var desc: String,
-    var higherLevel: String,
+    var desc: ArrayList<String>,
+    var higherLevel: ArrayList<String>,
     var range: String,
-    var aoe: AreaOfEffect,
+    var aoe: AreaOfEffect?,
     var ritual: Boolean,
     var duration: String,
     var concentration: Boolean,
@@ -19,6 +20,8 @@ data class SpellDetail(
     var damage: Damage,
     var school: School,
     var classes: ArrayList<Class>
+
+    //TODO: Add remaining nullpointer checks
 ) {
     constructor(json: JSONObject) :
             this(
@@ -26,17 +29,19 @@ data class SpellDetail(
                 json.optString("url"),
                 json.optString("name"),
                 json.optInt("level"),
-                json.optString("desc"),
-                json.optString("higherLevel"),
+                SpellDetailParser().toStringArrayList(json.optJSONArray("desc")),
+                SpellDetailParser().toStringArrayList(json.optJSONArray("higher_level")),
                 json.optString("range"),
-                json.opt("aoe") as AreaOfEffect,
+                SpellDetailParser().parseAoE(json.optJSONObject("area_of_effect")),
                 json.optBoolean("ritual"),
                 json.optString("duration"),
                 json.optBoolean("concentration"),
                 json.optString("castTime"),
                 json.optString("attackType"),
-                json.opt("damageType") as Damage,
-                json.opt("school") as School,
-                json.opt("classes") as ArrayList<Class>
+                SpellDetailParser().parseDamage(json.optJSONObject("damage")),
+                SpellDetailParser().parseSchool(json.optJSONObject("school")),
+                SpellDetailParser().parseClasses(json.optJSONArray("classes")),
             )
+
+
 }
