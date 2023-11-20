@@ -38,13 +38,15 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import de.zetsu.dndplayerassistancetool.R
 import de.zetsu.dndplayerassistancetool.SpellProvider
-import de.zetsu.dndplayerassistancetool.dataclasses.Spell
+import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
+import de.zetsu.dndplayerassistancetool.dataclasses.SpellListItem
 import kotlinx.coroutines.launch
 
 @Composable
 fun Search(context: Context) {
     // API call
-    val spellList = remember { mutableListOf<Spell>() }
+    val spellListItemList = remember { mutableListOf<SpellListItem>() }
+    val spellDetailList = remember { mutableListOf<SpellDetail>() }
     val spellProvider = SpellProvider(context)
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
@@ -52,13 +54,20 @@ fun Search(context: Context) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
+                    //TODO: Only enter for() if SpellList is fully loaded
+                    //TODO: Add Shadow load
                     spellProvider.loadSpellList { spells ->
                         Log.d("SpellsLog", spells.toString())
-                        println(spells[2].name)
-                        spellList.clear()
-                        spellList.addAll(spells)
+                        spellListItemList.clear()
+                        spellListItemList.addAll(spells)
+                        for (spell in spellListItemList) {
+                            spellProvider.loadSpellDetails(spell.index) { spellDetail ->
+                                Log.d("SpellDetail: ${spell.name}", spellDetail.toString())
+                                spellDetailList.add(spellDetail)
+                            }
+                        }
                     }
-                    println("on create")
+
                 }
 
                 Lifecycle.Event.ON_DESTROY -> {
@@ -74,9 +83,6 @@ fun Search(context: Context) {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-
-    println(spellList.toString())
-    // TODO: Check why callback and println is called multiple times only if callback is done
 
 
     // spell cards + search bar
@@ -126,7 +132,7 @@ fun Search(context: Context) {
 
          */
 
-        items(spellList) {
+        items(spellListItemList) {
             Box(
                 modifier = Modifier
                     .background(Color.White)

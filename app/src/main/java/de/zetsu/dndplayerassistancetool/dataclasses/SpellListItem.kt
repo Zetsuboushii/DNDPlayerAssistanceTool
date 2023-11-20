@@ -2,7 +2,7 @@ package de.zetsu.dndplayerassistancetool.dataclasses
 
 import org.json.JSONObject
 
-data class Spell(
+data class SpellListItem(
     var index: String,
     var name: String,
     var url: String
