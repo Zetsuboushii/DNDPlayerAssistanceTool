@@ -39,9 +39,9 @@ class SpellDetailParser {
         return classes
     }
 
-    fun parseAoE(json: JSONObject): AreaOfEffect {
-        val size = json.optInt("size", 0)
-        val typeString = json.optString("type", "").lowercase()
+    fun parseAoE(json: JSONObject?): AreaOfEffect {
+        val size = json?.optInt("size", 0)
+        val typeString = json?.optString("type", "unknown")?.lowercase()
 
         val type = when (typeString) {
             "sphere" -> AreaOfEffectType.SPHERE
@@ -49,35 +49,34 @@ class SpellDetailParser {
             "cylinder" -> AreaOfEffectType.CYLINDER
             "line" -> AreaOfEffectType.LINE
             "cube" -> AreaOfEffectType.CUBE
-            else -> throw IllegalArgumentException("Invalid AreaOfEffectType: $typeString")
+            else -> null
         }
 
         return AreaOfEffect(size, type)
     }
 
-    fun parseDamage(json: JSONObject): Damage {
-        val damageTypeJson = json.optJSONObject("damage_type")
-        val damageType = if (damageTypeJson != null) parseDamageType(damageTypeJson) else DamageType("", "", "")
+    fun parseDamage(json: JSONObject?): Damage {
+        val damageTypeJson = json?.optJSONObject("damage_type")
+        val damageType = parseDamageType(damageTypeJson)
 
-        val damageAtLevelJson = json.optJSONObject("damage_at_slot_level")
-        val damageAtLevel = if (damageAtLevelJson != null) parseDamageAtLevel(damageAtLevelJson) else emptyMap<String, Any>()
+        val damageAtLevelJson = json?.optJSONObject("damage_at_slot_level")
+        val damageAtLevel = parseDamageAtLevel(damageAtLevelJson)
 
         return Damage(damageType, damageAtLevel)
-
     }
 
-    private fun parseDamageType(json: JSONObject): DamageType {
+    private fun parseDamageType(json: JSONObject?): DamageType? {
         return DamageType(
-            json.optString("index", ""),
-            json.optString("name", ""),
-            json.optString("url", "")
+            json?.optString("index", ""),
+            json?.optString("name", ""),
+            json?.optString("url", "")
         )
     }
 
-    private fun parseDamageAtLevel(json: JSONObject): Map<String, Any> {
+    private fun parseDamageAtLevel(json: JSONObject?): Map<String, Any> {
         val damageAtLevelMap = mutableMapOf<String, Any>()
 
-        json.keys().forEach { key ->
+        json?.keys()?.forEach { key ->
             val value = json.opt(key)
             if (value != null) {
                 damageAtLevelMap[key] = value

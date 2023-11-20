@@ -10,12 +10,13 @@ import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 
 class SpellProvider(private val context: Context) {
 
+    val queue = Volley.newRequestQueue(context)
     val url = "http://www.dnd5eapi.co/api/spells"
 
-    fun loadSpellList(callback: (List<SpellListItem>) -> Unit){
+    fun loadSpellList(callback: (List<SpellListItem>) -> Unit) {
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
-            {response ->
+            { response ->
                 val resultsArray = response.getJSONArray("results")
                 val spellListItems = (0 until resultsArray.length()).map { index ->
                     SpellListItem(resultsArray.getJSONObject(index))
@@ -24,23 +25,23 @@ class SpellProvider(private val context: Context) {
                 callback.invoke(spellListItems)
             },
             { error ->
-                Log.d("APILog", "Error loading spell list: ${error.message}")})
+                Log.d("APILog", "Error loading spell list: ${error.message}")
+            })
 
-        val queue = Volley.newRequestQueue(context)
         queue.add(jsonRequest)
     }
 
-    fun loadSpellDetails(index: String, callback: (SpellDetail) -> Unit){
+    fun loadSpellDetails(index: String, callback: (SpellDetail) -> Unit) {
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url.plus("/").plus(index), null,
-            {response ->
+            { response ->
                 println(response)
                 callback.invoke(SpellDetail(response))
             },
             { error ->
-                Log.d("APILog", "Error loading spell list: ${error.message}")})
+                Log.d("APILog", "Error loading spell list: ${error.message}")
+            })
 
-        val queue = Volley.newRequestQueue(context)
         queue.add(jsonRequest)
     }
 }

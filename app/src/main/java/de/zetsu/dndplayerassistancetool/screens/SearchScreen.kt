@@ -60,12 +60,12 @@ fun Search(context: Context) {
                         Log.d("SpellsLog", spells.toString())
                         spellListItemList.clear()
                         spellListItemList.addAll(spells)
-                        //for (spell in spellListItemList) {      //don't know if this really works but it is slow
-                        //    spellProvider.loadSpellDetails(spell.index) { spellDetail ->
-                        //        Log.d("SpellDetail: ${spell.name}", spellDetail.toString())
-                        //        spellDetailList.add(spellDetail)
-                        //    }
-                        //}
+                        for (spell in spellListItemList) {
+                            spellProvider.loadSpellDetails(spell.index) { spellDetail ->
+                                Log.d("SpellDetail: ${spell.name}", spellDetail.toString())
+                                spellDetailList.add(spellDetail)
+                            }
+                        }
                     }
 
                 }
@@ -83,7 +83,6 @@ fun Search(context: Context) {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-
 
 
     // spell cards + search bar
