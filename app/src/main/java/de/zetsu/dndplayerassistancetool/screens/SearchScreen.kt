@@ -130,7 +130,7 @@ fun Search(context: Context) {
          */
 
         // spell cards
-        items(spellListItemList) {
+        items(spellDetailList) {
             Box(modifier = Modifier.background(Color.White)) {
                 ElevatedCard(
                     colors = CardDefaults.cardColors(
@@ -154,7 +154,7 @@ fun Search(context: Context) {
                                     "evocation" -> R.drawable.ic_school_evocation
                                     "illusion" -> R.drawable.ic_school_illusion
                                     "necromancy" -> R.drawable.ic_school_necromancy
-                                    "Transmutation" -> R.drawable.ic_school_transmutation
+                                    "transmutation" -> R.drawable.ic_school_transmutation
                                     else -> R.drawable.ic_taunt_fill
                                 }
                             ),
