@@ -31,6 +31,7 @@ class SpellProvider(private val context: Context) {
             },
             { error ->
                 Log.d("APILog", "Error loading spell list: ${error.message}")
+                handleError(error)
             })
 
         queue.add(jsonRequest)
@@ -56,7 +57,7 @@ class SpellProvider(private val context: Context) {
 
             },
             { error ->
-                Log.d("APILog", "Error loading spell list: $error")
+                Log.d("APILog", "Error loading spell details: $error")
                 handleError(error)
             })
 
