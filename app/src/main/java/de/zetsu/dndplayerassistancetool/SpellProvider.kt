@@ -2,6 +2,7 @@ package de.zetsu.dndplayerassistancetool
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
@@ -14,13 +15,15 @@ class SpellProvider(private val context: Context) {
     val url = "http://www.dnd5eapi.co/api/spells"
     var countRequest = 0
     var flagAPI = false
+    var spellListLength = 0
     fun loadSpellList(callback: (List<SpellListItem>) -> Unit) {
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
                 countRequest++
                 val resultsArray = response.getJSONArray("results")
-                val spellListItems = (0 until resultsArray.length()).map { index ->
+                spellListLength = resultsArray.length()
+                val spellListItems = (0 until spellListLength).map { index ->
                     SpellListItem(resultsArray.getJSONObject(index))
                 }.toList()
 
@@ -28,6 +31,7 @@ class SpellProvider(private val context: Context) {
             },
             { error ->
                 Log.d("APILog", "Error loading spell list: ${error.message}")
+                handleError(error)
             })
 
         queue.add(jsonRequest)
@@ -39,17 +43,30 @@ class SpellProvider(private val context: Context) {
             { response ->
                 //println(response)
                 countRequest++
-                if(countRequest == 320){
+                // for all elements in Spellist + SpellList itself
+                if(countRequest == spellListLength+1){
                     flagAPI = true
                     Log.d("APILoadFlag", "API Call is completed")
                 }
-                callback.invoke(SpellDetail(response))
+                try {
+                    val spellDetail = SpellDetail(response)
+                    callback.invoke(spellDetail)
+                }catch (exception: Exception){
+                    handleError(exception)
+                }
+
             },
             { error ->
-                Log.d("APILog", "Error loading spell list: ${error.message}")
+                Log.d("APILog", "Error loading spell details: $error")
+                handleError(error)
             })
 
         queue.add(jsonRequest)
 
     }
+
+    private fun handleError(exception: Exception){
+        Toast.makeText(context, "Error occurred: ${exception}", Toast.LENGTH_LONG).show()
+    }
+
 }
