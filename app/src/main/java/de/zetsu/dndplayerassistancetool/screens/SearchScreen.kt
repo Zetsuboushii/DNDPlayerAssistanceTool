@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -164,20 +165,9 @@ fun Search(context: Context) {
                             )
                             Spacer(modifier = Modifier.size(15.dp))
                             Column(horizontalAlignment = Alignment.Start) {
-                                Text(text = it.name)
+                                Text(text = it.name, fontWeight = FontWeight.Bold)
                                 Text(text = it.school.name)
                             }
-                            /*Icon(
-                        painter = painterResource(
-                            if (expanded) {
-                                R.drawable.ic_expandless
-                            } else {
-                                R.drawable.ic_expandmore
-                            }
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier.padding(4.dp)
-                    )*/
                         }
                         if (expanded) {
                             var description = ""
@@ -187,12 +177,14 @@ fun Search(context: Context) {
                                     description += "\n"
                                 }
                             }
-                            Row(
-                                modifier = Modifier.padding(10.dp)
-                            ) {
-                                Text(
-                                    text = description
-                                )
+                            Row(modifier = Modifier.padding(10.dp)) {
+                                Row(modifier = Modifier.fillMaxWidth()) {
+                                    Column {
+                                        Row { Text(text = "LEVEL", fontWeight = FontWeight.Bold) }
+                                        Row { Text(text = it.level.toString()) }
+                                    }
+                                }
+                                Row { Text(text = description) }
                             }
                         }
                     }
