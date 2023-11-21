@@ -2,6 +2,7 @@ package de.zetsu.dndplayerassistancetool
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
@@ -46,13 +47,25 @@ class SpellProvider(private val context: Context) {
                     flagAPI = true
                     Log.d("APILoadFlag", "API Call is completed")
                 }
-                callback.invoke(SpellDetail(response))
+                try {
+                    val spellDetail = SpellDetail(response)
+                    callback.invoke(spellDetail)
+                }catch (exception: Exception){
+                    handleError(exception)
+                }
+
             },
             { error ->
-                Log.d("APILog", "Error loading spell list: ${error.message}")
+                Log.d("APILog", "Error loading spell list: $error")
+                handleError(error)
             })
 
         queue.add(jsonRequest)
 
     }
+
+    private fun handleError(exception: Exception){
+        Toast.makeText(context, "Error occurred: ${exception}", Toast.LENGTH_LONG).show()
+    }
+
 }

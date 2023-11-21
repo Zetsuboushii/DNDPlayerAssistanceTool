@@ -58,7 +58,6 @@ fun Search(context: Context) {
 
     if (toBeLoading) {
         // only make api call when screen is created
-        // TODO: don't load API-Calls again when already on the correct Screen
         // TODO: use different method to make API-Call only on create, because DisposableEffect is to heavy
         //       if on delete isn't used
         DisposableEffect(lifecycleOwner) {
