@@ -14,13 +14,15 @@ class SpellProvider(private val context: Context) {
     val url = "http://www.dnd5eapi.co/api/spells"
     var countRequest = 0
     var flagAPI = false
+    var spellListLength = 0
     fun loadSpellList(callback: (List<SpellListItem>) -> Unit) {
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
                 countRequest++
                 val resultsArray = response.getJSONArray("results")
-                val spellListItems = (0 until resultsArray.length()).map { index ->
+                spellListLength = resultsArray.length()
+                val spellListItems = (0 until spellListLength).map { index ->
                     SpellListItem(resultsArray.getJSONObject(index))
                 }.toList()
 
@@ -39,7 +41,8 @@ class SpellProvider(private val context: Context) {
             { response ->
                 //println(response)
                 countRequest++
-                if(countRequest == 320){
+                // for all elements in Spellist + SpellList itself
+                if(countRequest == spellListLength+1){
                     flagAPI = true
                     Log.d("APILoadFlag", "API Call is completed")
                 }
