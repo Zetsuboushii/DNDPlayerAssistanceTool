@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import de.zetsu.dndplayerassistancetool.MainActivity
 import de.zetsu.dndplayerassistancetool.R
 import de.zetsu.dndplayerassistancetool.SpellProvider
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
@@ -47,30 +48,33 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Search(context: Context) {
+
     // API call
     val spellListItemList = remember { mutableListOf<SpellListItem>() }
     val spellDetailList = remember { mutableListOf<SpellDetail>() }
     val spellProvider = SpellProvider(context)
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
+    // only make api call when screen is created
+    // TODO: don't load API-Calls again when already on the correct Screen
+    // TODO: use different method to make API-Call only on create, because DisposableEffect is to heavy
+    //       if on delete isn't used
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
-                    //TODO: Only enter for() if SpellList is fully loaded
-                    //TODO: Add Shadow load
+
                     spellProvider.loadSpellList { spells ->
-                        Log.d("SpellsLog", spells.toString())
+                        //Log.d("SpellsLog", spells.toString())
                         spellListItemList.clear()
                         spellListItemList.addAll(spells)
                         for (spell in spellListItemList) {
                             spellProvider.loadSpellDetails(spell.index) { spellDetail ->
-                                Log.d("SpellDetail: ${spell.name}", spellDetail.toString())
+                                //Log.d("SpellDetail: ${spell.name}", spellDetail.toString())
                                 spellDetailList.add(spellDetail)
                             }
                         }
                     }
-
                 }
 
                 Lifecycle.Event.ON_DESTROY -> {
@@ -86,7 +90,6 @@ fun Search(context: Context) {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-
 
     // spell cards + search bar
     val listState = rememberLazyListState()

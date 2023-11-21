@@ -12,11 +12,13 @@ class SpellProvider(private val context: Context) {
 
     val queue = Volley.newRequestQueue(context)
     val url = "http://www.dnd5eapi.co/api/spells"
-
+    var countRequest = 0
+    var flagAPI = false
     fun loadSpellList(callback: (List<SpellListItem>) -> Unit) {
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
+                countRequest++
                 val resultsArray = response.getJSONArray("results")
                 val spellListItems = (0 until resultsArray.length()).map { index ->
                     SpellListItem(resultsArray.getJSONObject(index))
@@ -35,7 +37,12 @@ class SpellProvider(private val context: Context) {
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url.plus("/").plus(index), null,
             { response ->
-                println(response)
+                //println(response)
+                countRequest++
+                if(countRequest == 320){
+                    flagAPI = true
+                    Log.d("APILoadFlag", "API Call is completed")
+                }
                 callback.invoke(SpellDetail(response))
             },
             { error ->
@@ -43,5 +50,6 @@ class SpellProvider(private val context: Context) {
             })
 
         queue.add(jsonRequest)
+
     }
 }
