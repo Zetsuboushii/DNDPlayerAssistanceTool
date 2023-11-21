@@ -5,8 +5,8 @@ import android.util.Log
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import de.zetsu.dndplayerassistancetool.dataclasses.SpellListItem
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
+import de.zetsu.dndplayerassistancetool.dataclasses.SpellListItem
 
 class SpellProvider(private val context: Context) {
 
@@ -39,7 +39,7 @@ class SpellProvider(private val context: Context) {
             { response ->
                 //println(response)
                 countRequest++
-                if(countRequest == 320){
+                if (countRequest == 320) {
                     flagAPI = true
                     Log.d("APILoadFlag", "API Call is completed")
                 }
