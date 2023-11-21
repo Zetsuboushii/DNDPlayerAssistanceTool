@@ -3,6 +3,7 @@ package de.zetsu.dndplayerassistancetool.screens
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,7 +59,7 @@ fun Search(context: Context) {
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
                     //TODO: Only enter for() if SpellList is fully loaded
-                    //TODO: Add Shadow load
+                    //TODO: Add ghost load
                     spellProvider.loadSpellList { spells ->
                         Log.d("SpellsLog", spells.toString())
                         spellListItemList.clear()
@@ -70,7 +71,6 @@ fun Search(context: Context) {
                             }
                         }
                     }
-
                 }
 
                 Lifecycle.Event.ON_DESTROY -> {
@@ -132,6 +132,7 @@ fun Search(context: Context) {
         // spell cards
         items(spellDetailList) {
             Box(modifier = Modifier.background(Color.White)) {
+                var expanded by remember { mutableStateOf(false) }
                 ElevatedCard(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -139,6 +140,9 @@ fun Search(context: Context) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
+                        .clickable(
+                            onClick = { expanded = !expanded }
+                        )
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -170,6 +174,20 @@ fun Search(context: Context) {
                             Text(text = it.name)
                             Text(text = it.school.name)
                         }
+                        /*Icon(
+                            painter = painterResource(
+                                if (expanded) {
+                                    R.drawable.ic_expandless
+                                } else {
+                                    R.drawable.ic_expandmore
+                                }
+                            ),
+                            contentDescription = null,
+                            modifier = Modifier.padding(4.dp)
+                        )*/
+                    }
+                    if (expanded) {
+                        Text(text = it.desc.toString())
                     }
                 }
             }
