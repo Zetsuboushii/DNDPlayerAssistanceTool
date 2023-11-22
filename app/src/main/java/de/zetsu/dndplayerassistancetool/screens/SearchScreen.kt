@@ -1,6 +1,7 @@
 package de.zetsu.dndplayerassistancetool.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -80,7 +81,7 @@ fun Search(context: Context) {
                     }
 
                     Lifecycle.Event.ON_DESTROY -> {
-                        println("on destroy")
+                        Log.d("Testing","on destroy")
                     }
 
                     else -> {}

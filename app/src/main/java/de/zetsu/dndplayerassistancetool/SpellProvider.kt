@@ -17,6 +17,9 @@ class SpellProvider(private val context: Context) {
     var countRequest = 0
     var flagAPI = false
     var spellListLength = 0
+
+    // create API call to get List of all spell-names and indexes to create detailed spell list
+    // this list doesn't has more information than name and index
     fun loadSpellList(callback: (List<SpellListItem>) -> Unit) {
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
@@ -38,6 +41,7 @@ class SpellProvider(private val context: Context) {
         queue.add(jsonRequest)
     }
 
+    // create API call to get detailed spell information's based on its index
     fun loadSpellDetails(index: String, callback: (SpellDetail) -> Unit) {
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url.plus("/").plus(index), null,
@@ -66,6 +70,7 @@ class SpellProvider(private val context: Context) {
 
     }
 
+    // shows errors to the user
     private fun handleError(exception: Exception) {
         val errorMessage: String = when (exception) {
             is NoConnectionError -> "No Internet Connection"
