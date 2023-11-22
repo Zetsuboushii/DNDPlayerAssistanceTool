@@ -81,7 +81,7 @@ fun Search(context: Context) {
                     }
 
                     Lifecycle.Event.ON_DESTROY -> {
-                        Log.d("Testing","on destroy")
+                        Log.d("Testing", "on destroy")
                     }
 
                     else -> {}

@@ -49,14 +49,14 @@ class SpellProvider(private val context: Context) {
                 //println(response)
                 countRequest++
                 // for all elements in Spellist + SpellList itself
-                if(countRequest == spellListLength+1){
+                if (countRequest == spellListLength + 1) {
                     flagAPI = true
                     Log.d("APILoadFlag", "API Call is completed")
                 }
                 try {
                     val spellDetail = SpellDetail(response)
                     callback.invoke(spellDetail)
-                }catch (exception: Exception){
+                } catch (exception: Exception) {
                     handleError(exception)
                 }
 
