@@ -1,14 +1,21 @@
 package de.zetsu.dndplayerassistancetool.composables
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
@@ -76,24 +83,35 @@ fun SpellCard(spell: SpellDetail, expanded: Boolean, onClick: () -> Unit) {
                     description += "\n"
                 }
             }
-            Row {
-                SpellAttributeBlock("LEVEL", spell.level.toString())
-                SpellAttributeBlock("CAST TIME", spell.castTime)
-                SpellAttributeBlock("RANGE/AREA", spell.range)
-            }
-            Row {
-                SpellAttributeBlock("DURATION", spell.duration)
-                SpellAttributeBlock("SCHOOL", spell.school.name)
-            }
-            Row {
-                spell.attackType?.let { SpellAttributeBlock("ATTACK/SAVE", it) }
-                spell.damage.damageType?.name?.let {
-                    SpellAttributeBlock("DAMAGE/EFFECT", it)
+
+            Row(Modifier.fillMaxWidth()) {
+                Column(Modifier.weight(1f)) {
+                    SpellAttributeBlock(
+                        "LEVEL",
+                        if (spell.level == 0) "Cantrip" else spell.level.toString()
+                    )
+                }
+                Column(Modifier.weight(1f)) {
+                    SpellAttributeBlock("CAST TIME", spell.castTime)
                 }
             }
-            
-            LazyHorizontalGrid(rows = GridCells.Fixed(3)) {
-                
+            Row(Modifier.fillMaxWidth()) {
+                Column(Modifier.weight(1f)) {
+                    SpellAttributeBlock("RANGE/AREA", spell.range)
+                }
+                Column(Modifier.weight(1f)) {
+                    SpellAttributeBlock("DURATION", spell.duration)
+                }
+            }
+            Row(Modifier.fillMaxWidth()) {
+                Column(Modifier.weight(1f)) {
+                    spell.damage.damageType?.name?.let {
+                        SpellAttributeBlock("DAMAGE/EFFECT", it)
+                    }
+                }
+                Column(Modifier.weight(1f)) {
+                    spell.attackType?.let { SpellAttributeBlock("ATTACK/SAVE", it) }
+                }
             }
 
             Divider(Modifier.padding(10.dp), thickness = 2.dp)

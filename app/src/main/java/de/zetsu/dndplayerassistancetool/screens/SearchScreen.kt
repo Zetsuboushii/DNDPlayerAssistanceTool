@@ -72,17 +72,17 @@ fun Search(context: Context) {
         }
     }
 
+    // spell cards + search bar
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
 
-    if (!toBeLoading) {
-        // spell cards + search bar
-        val listState = rememberLazyListState()
-        val coroutineScope = rememberCoroutineScope()
+    spellDetailList.sortBy { it.name }
 
-        LazyColumn(state = listState) {
-            item {
-                SimpleSearchBar()
-            }
-
+    LazyColumn(state = listState) {
+        item {
+            SimpleSearchBar()
+        }
+        if (!toBeLoading) {
             // spell cards
             items(spellDetailList) {
                 Box(modifier = Modifier.background(Color.White)) {
@@ -91,6 +91,6 @@ fun Search(context: Context) {
                 }
             }
         }
-        GoToTopButton(coroutineScope, listState)
     }
+    GoToTopButton(coroutineScope, listState)
 }
