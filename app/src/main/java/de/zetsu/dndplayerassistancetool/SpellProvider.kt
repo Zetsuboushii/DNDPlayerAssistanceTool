@@ -3,6 +3,7 @@ package de.zetsu.dndplayerassistancetool
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import com.android.volley.NoConnectionError
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
@@ -65,8 +66,12 @@ class SpellProvider(private val context: Context) {
 
     }
 
-    private fun handleError(exception: Exception){
-        Toast.makeText(context, "Error occurred: ${exception}", Toast.LENGTH_LONG).show()
+    private fun handleError(exception: Exception) {
+        val errorMessage: String = when (exception) {
+            is NoConnectionError -> "No Internet"
+            else -> "Error occurred: ${exception.message}"
+        }
+        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
     }
 
 }

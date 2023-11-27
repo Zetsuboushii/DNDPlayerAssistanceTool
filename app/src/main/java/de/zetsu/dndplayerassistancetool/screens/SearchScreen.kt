@@ -1,6 +1,7 @@
 package de.zetsu.dndplayerassistancetool.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import de.zetsu.dndplayerassistancetool.CacheManager
 import de.zetsu.dndplayerassistancetool.R
 import de.zetsu.dndplayerassistancetool.SpellProvider
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
@@ -54,6 +56,7 @@ fun Search(context: Context) {
     val spellDetailList = remember { mutableListOf<SpellDetail>() }
     val spellProvider = SpellProvider(context)
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    val spellListCacheManager = CacheManager(context)
 
     var toBeLoading by remember { mutableStateOf(true) }
 
@@ -61,21 +64,53 @@ fun Search(context: Context) {
         // only make api call when screen is created
         // TODO: use different method to make API-Call only on create, because DisposableEffect is to heavy
         //       if on delete isn't used
+        // TODO: delete catch if internet is on and on first visit of SpellScreen
         DisposableEffect(lifecycleOwner) {
             val observer = LifecycleEventObserver { _, event ->
                 when (event) {
                     Lifecycle.Event.ON_CREATE -> {
+                        //Todo: Dont do this if no internet
                         spellProvider.loadSpellList { spells ->
                             //Log.d("SpellsLog", spells.toString())
                             spellListItemList.clear()
                             spellListItemList.addAll(spells)
-                            for (spell in spellListItemList) {
+                            val cachedSpellDetailList =
+                                spellListCacheManager.loadSpellListFromCache()
+
+                            if (cachedSpellDetailList != null) {
+                                // Use the cached data
+                                Log.d("cache", "used cached data")
+                                spellDetailList.addAll(cachedSpellDetailList)
+                                // for (spellDetail in cachedSpellDetailList) {
+                                //     Log.d("CachedSpellDetail", spellDetail.toString())
+                                // }
+                                toBeLoading = false
+                            } else {
+                                // Load the data from the network
+                                Log.d("cache", "load data form network")
+                                for (spell in spellListItemList) {
+                                    spellProvider.loadSpellDetails(spell.index) { spellDetail ->
+                                        spellDetailList.add(spellDetail)
+
+                                        // Check if all data is loaded
+                                        if (spellProvider.flagAPI) {
+                                            toBeLoading = false
+                                            // Save the spellDetailList to cache
+                                            Log.d("cache", "save spellDetailList to cache")
+                                            spellListCacheManager.saveSpellListToCache(
+                                                spellDetailList
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            /*for (spell in spellListItemList) {
                                 spellProvider.loadSpellDetails(spell.index) { spellDetail ->
                                     //Log.d("SpellDetail: ${spell.name}", spellDetail.toString())
                                     spellDetailList.add(spellDetail)
                                     if (spellProvider.flagAPI) toBeLoading = false
                                 }
-                            }
+                            } */
                         }
                     }
 
