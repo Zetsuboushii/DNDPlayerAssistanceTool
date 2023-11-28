@@ -3,6 +3,7 @@ package de.zetsu.dndplayerassistancetool.screens
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -13,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -20,7 +22,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import de.zetsu.dndplayerassistancetool.SpellProvider
-import de.zetsu.dndplayerassistancetool.composables.*
+import de.zetsu.dndplayerassistancetool.composables.AddToBookButton
+import de.zetsu.dndplayerassistancetool.composables.GoToTopButton
+import de.zetsu.dndplayerassistancetool.composables.SimpleSearchBar
+import de.zetsu.dndplayerassistancetool.composables.SpellCard
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellListItem
 
@@ -75,6 +80,8 @@ fun Search(context: Context) {
     // spell cards + search bar
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+    val expands = remember { mutableListOf<SpellDetail>() }
+    val selects = remember { mutableListOf<SpellDetail>() }
 
     spellDetailList.sortBy { it.name }
 
@@ -86,11 +93,27 @@ fun Search(context: Context) {
             // spell cards
             items(spellDetailList) {
                 Box(modifier = Modifier.background(Color.White)) {
-                    var expanded by remember { mutableStateOf(false) }
-                    SpellCard(spell = it, expanded, onClick = { expanded = !expanded })
+                    var expanded by remember { mutableStateOf(expands.contains(it)) }
+                    var selected by remember { mutableStateOf(selects.contains(it)) }
+                    SpellCard(
+                        spell = it,
+                        expanded = expanded,
+                        onClick = {
+                            expanded = !expanded
+                            if (expanded) expands.add(it) else expands.remove(it)
+                        },
+                        selected = selected,
+                        onLongClick = {
+                            selected = !selected
+                            if (selected) selects.add(it) else selects.remove(it)
+                        }
+                    )
                 }
             }
         }
     }
-    GoToTopButton(coroutineScope, listState)
+    Box(contentAlignment = Alignment.BottomEnd) {
+        Row { AddToBookButton(onClick = { /*TODO*/ }) }
+        Row { GoToTopButton(coroutineScope = coroutineScope, lazyListState = listState) }
+    }
 }
