@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setScreenAsVisited(applicationContext,false)
+        setScreenAsVisited(applicationContext, false)
         setContent {
             DndplayerassistancetoolTheme {
 

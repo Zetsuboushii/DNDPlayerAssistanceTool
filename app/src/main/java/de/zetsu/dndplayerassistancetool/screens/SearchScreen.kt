@@ -47,8 +47,8 @@ import de.zetsu.dndplayerassistancetool.CacheManager
 import de.zetsu.dndplayerassistancetool.Constants
 import de.zetsu.dndplayerassistancetool.R
 import de.zetsu.dndplayerassistancetool.SpellProvider
-import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 import de.zetsu.dndplayerassistancetool.dataclasses.Spell
+import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 import kotlinx.coroutines.launch
 
 @Composable
@@ -62,7 +62,6 @@ fun Search(context: Context) {
     val spellListCacheManager = CacheManager(context)
 
     var loaded by remember { mutableStateOf(false) }
-    //TODO: Maybe put mark in get data from network part
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -84,6 +83,7 @@ fun Search(context: Context) {
                                 }
                             }
                             ) { _ ->
+                                // load data from cache if no network
                                 val spellDetails =
                                     spellListCacheManager.loadSpellListFromCache()
                                 if (spellDetails == null) {
@@ -128,76 +128,6 @@ fun Search(context: Context) {
         }
     }
 
-    /*
-            // only make api call when screen is created
-            // TODO: use different method to make API-Call only on create, because DisposableEffect is to heavy
-            //       if on delete isn't used
-            // TODO: delete catch if internet is on and on first visit of SpellScreen
-            DisposableEffect(lifecycleOwner) {
-                val observer = LifecycleEventObserver { _, event ->
-                    when (event) {
-                        Lifecycle.Event.ON_CREATE -> {
-                            if (loaded) {
-                                /*CacheManager(context).loadSpellListFromCache()?.toMutableStateList()
-                                    ?.let {
-                                        spellDetailList = it
-                                        Log.d("Cache", "loaded Spells from cache")
-                                    } ?: {
-                                    Log.d("Cache", "Error: loading cache")
-                                }*/
-                                println("yay")
-                                return@LifecycleEventObserver
-                            }
-                            spellProvider.loadSpellList(callback = { spells ->
-                                spellList.clear()
-                                spellList.addAll(spells)
-                                // Load the data from the network
-                                Log.d("cache", "load data from network")
-                                spellProvider.loadAllSpellDetails {
-                                    spellDetailList.clear()
-                                    spellDetailList.addAll(it)
-                                    loaded = true
-
-                                }
-                            }
-                            ) { _ ->
-                                val spellDetails =
-                                    spellListCacheManager.loadSpellListFromCache()
-                                if (spellDetails == null) {
-                                    Toast.makeText(
-                                        context,
-                                        "No cache available try loading again with an internet connection",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } else {
-                                    spellDetailList = spellDetails.toMutableList()
-                                }
-                            }
-
-                            /*for (spell in spellListItemList) {
-                                spellProvider.loadSpellDetails(spell.index) { spellDetail ->
-                                    //Log.d("SpellDetail: ${spell.name}", spellDetail.toString())
-                                    spellDetailList.add(spellDetail)
-                                    if (spellProvider.flagAPI) toBeLoading = false
-                                }
-                            } */
-                        }
-
-                        Lifecycle.Event.ON_DESTROY -> {
-                            println("on destroy")
-                        }
-
-                        else -> {}
-                    }
-                }
-                lifecycleOwner.lifecycle.addObserver(observer)
-
-                onDispose {
-                    lifecycleOwner.lifecycle.removeObserver(observer)
-                }
-            }
-        }
-    */
     if (loaded) {
         // spell cards + search bar
         val listState = rememberLazyListState()
@@ -323,7 +253,6 @@ fun Search(context: Context) {
         }
     }
 }
-
 
 
 fun wasScreenVisitedBefore(context: Context): Boolean {

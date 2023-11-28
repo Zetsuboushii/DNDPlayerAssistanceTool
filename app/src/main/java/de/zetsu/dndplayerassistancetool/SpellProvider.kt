@@ -18,7 +18,7 @@ class SpellProvider(private val context: Context) {
     val cacheManager = CacheManager(context)
     var spellList = mutableListOf<Spell>()
     var spellDetailList = mutableListOf<SpellDetail>()
-    fun loadSpellList(callback: (List<Spell>) -> Unit, errorCallback:(Exception) -> Unit) {
+    fun loadSpellList(callback: (List<Spell>) -> Unit, errorCallback: (Exception) -> Unit) {
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
             { response ->
@@ -65,7 +65,7 @@ class SpellProvider(private val context: Context) {
         for (spell in spellList) {
             loadSpellDetails(spell.index) { spellDetail ->
                 spellDetailList.add(spellDetail)
-                if (spell == spellList.lastOrNull()){
+                if (spell == spellList.lastOrNull()) {
                     this.spellDetailList = spellDetailList
                     callback.invoke(spellDetailList)
                     Log.d("APILoadFlag", "API Call is completed")
