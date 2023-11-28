@@ -1,6 +1,7 @@
 package de.zetsu.dndplayerassistancetool.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -34,7 +35,7 @@ fun Search(context: Context) {
 
     // API call
     val spellListItemList = remember { mutableListOf<SpellListItem>() }
-    val spellDetailList = remember { mutableListOf<SpellDetail>() }
+    var spellDetailList = remember { mutableListOf<SpellDetail>() }
     val spellProvider = SpellProvider(context)
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
@@ -87,7 +88,16 @@ fun Search(context: Context) {
 
     LazyColumn(state = listState) {
         item {
-            SimpleSearchBar()
+            SimpleSearchBar(
+                onSearch = { search ->
+                    spellDetailList = spellDetailList.filter {
+                        it.name.startsWith(search, ignoreCase = true)
+                    }.toMutableList()
+                    for (i in 0 until spellDetailList.size) {
+                        Log.d("SearchResults", spellDetailList[i].name)
+                    }
+                }
+            )
         }
         if (!toBeLoading) {
             // spell cards
