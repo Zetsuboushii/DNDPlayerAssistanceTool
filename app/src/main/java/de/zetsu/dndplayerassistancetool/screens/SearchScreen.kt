@@ -2,6 +2,7 @@ package de.zetsu.dndplayerassistancetool.screens
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,68 +44,136 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import de.zetsu.dndplayerassistancetool.CacheManager
+import de.zetsu.dndplayerassistancetool.Constants
 import de.zetsu.dndplayerassistancetool.R
 import de.zetsu.dndplayerassistancetool.SpellProvider
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
-import de.zetsu.dndplayerassistancetool.dataclasses.SpellListItem
+import de.zetsu.dndplayerassistancetool.dataclasses.Spell
 import kotlinx.coroutines.launch
 
 @Composable
 fun Search(context: Context) {
 
     // API call
-    val spellListItemList = remember { mutableListOf<SpellListItem>() }
-    val spellDetailList = remember { mutableListOf<SpellDetail>() }
+    val spellList = remember { mutableListOf<Spell>() }
+    var spellDetailList = remember { mutableListOf<SpellDetail>() }
     val spellProvider = SpellProvider(context)
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val spellListCacheManager = CacheManager(context)
 
-    var toBeLoading by remember { mutableStateOf(true) }
+    var loaded by remember { mutableStateOf(false) }
+    //TODO: Maybe put mark in get data from network part
 
-    if (toBeLoading) {
-        // only make api call when screen is created
-        // TODO: use different method to make API-Call only on create, because DisposableEffect is to heavy
-        //       if on delete isn't used
-        // TODO: delete catch if internet is on and on first visit of SpellScreen
-        DisposableEffect(lifecycleOwner) {
-            val observer = LifecycleEventObserver { _, event ->
-                when (event) {
-                    Lifecycle.Event.ON_CREATE -> {
-                        //Todo: Dont do this if no internet
-                        spellProvider.loadSpellList { spells ->
-                            //Log.d("SpellsLog", spells.toString())
-                            spellListItemList.clear()
-                            spellListItemList.addAll(spells)
-                            val cachedSpellDetailList =
-                                spellListCacheManager.loadSpellListFromCache()
-
-                            if (cachedSpellDetailList != null) {
-                                // Use the cached data
-                                Log.d("cache", "used cached data")
-                                spellDetailList.addAll(cachedSpellDetailList)
-                                // for (spellDetail in cachedSpellDetailList) {
-                                //     Log.d("CachedSpellDetail", spellDetail.toString())
-                                // }
-                                toBeLoading = false
-                            } else {
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+                    if (!loaded) {
+                        if (!wasScreenVisitedBefore(context)) {
+                            //get data from network
+                            setScreenAsVisited(context, true)
+                            spellProvider.loadSpellList(callback = { spells ->
+                                spellList.clear()
+                                spellList.addAll(spells)
                                 // Load the data from the network
-                                Log.d("cache", "load data form network")
-                                for (spell in spellListItemList) {
-                                    spellProvider.loadSpellDetails(spell.index) { spellDetail ->
-                                        spellDetailList.add(spellDetail)
-
-                                        // Check if all data is loaded
-                                        if (spellProvider.flagAPI) {
-                                            toBeLoading = false
-                                            // Save the spellDetailList to cache
-                                            Log.d("cache", "save spellDetailList to cache")
-                                            spellListCacheManager.saveSpellListToCache(
-                                                spellDetailList
-                                            )
-                                        }
-                                    }
+                                Log.d("cache", "load data from network")
+                                spellProvider.loadAllSpellDetails {
+                                    spellDetailList.clear()
+                                    spellDetailList.addAll(it)
+                                    loaded = true
                                 }
                             }
+                            ) { _ ->
+                                val spellDetails =
+                                    spellListCacheManager.loadSpellListFromCache()
+                                if (spellDetails == null) {
+                                    Toast.makeText(
+                                        context,
+                                        "No cache available try loading again with an internet connection",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                } else {
+                                    spellDetailList = spellDetails.toMutableList()
+                                    loaded = true
+                                }
+                            }
+
+                        } else {
+                            //load data from cache
+                            spellListCacheManager.loadSpellListFromCache()?.toMutableStateList()
+                                ?.let {
+                                    spellDetailList.clear()
+                                    spellDetailList.addAll(it)
+                                    Log.d("Cache", "loaded Spells from cache")
+                                    loaded = true
+                                } ?: {
+                                Log.d("Cache", "Error: loading cache")
+                            }
+                        }
+                    }
+                }
+
+                Lifecycle.Event.ON_DESTROY -> {
+                    println("on destroy")
+                }
+
+                else -> {}
+            }
+
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    /*
+            // only make api call when screen is created
+            // TODO: use different method to make API-Call only on create, because DisposableEffect is to heavy
+            //       if on delete isn't used
+            // TODO: delete catch if internet is on and on first visit of SpellScreen
+            DisposableEffect(lifecycleOwner) {
+                val observer = LifecycleEventObserver { _, event ->
+                    when (event) {
+                        Lifecycle.Event.ON_CREATE -> {
+                            if (loaded) {
+                                /*CacheManager(context).loadSpellListFromCache()?.toMutableStateList()
+                                    ?.let {
+                                        spellDetailList = it
+                                        Log.d("Cache", "loaded Spells from cache")
+                                    } ?: {
+                                    Log.d("Cache", "Error: loading cache")
+                                }*/
+                                println("yay")
+                                return@LifecycleEventObserver
+                            }
+                            spellProvider.loadSpellList(callback = { spells ->
+                                spellList.clear()
+                                spellList.addAll(spells)
+                                // Load the data from the network
+                                Log.d("cache", "load data from network")
+                                spellProvider.loadAllSpellDetails {
+                                    spellDetailList.clear()
+                                    spellDetailList.addAll(it)
+                                    loaded = true
+
+                                }
+                            }
+                            ) { _ ->
+                                val spellDetails =
+                                    spellListCacheManager.loadSpellListFromCache()
+                                if (spellDetails == null) {
+                                    Toast.makeText(
+                                        context,
+                                        "No cache available try loading again with an internet connection",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                } else {
+                                    spellDetailList = spellDetails.toMutableList()
+                                }
+                            }
+
                             /*for (spell in spellListItemList) {
                                 spellProvider.loadSpellDetails(spell.index) { spellDetail ->
                                     //Log.d("SpellDetail: ${spell.name}", spellDetail.toString())
@@ -112,25 +182,23 @@ fun Search(context: Context) {
                                 }
                             } */
                         }
-                    }
 
-                    Lifecycle.Event.ON_DESTROY -> {
-                        println("on destroy")
-                    }
+                        Lifecycle.Event.ON_DESTROY -> {
+                            println("on destroy")
+                        }
 
-                    else -> {}
+                        else -> {}
+                    }
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
+
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
                 }
             }
-            lifecycleOwner.lifecycle.addObserver(observer)
-
-            onDispose {
-                lifecycleOwner.lifecycle.removeObserver(observer)
-            }
         }
-    }
-
-
-    if (!toBeLoading) {
+    */
+    if (loaded) {
         // spell cards + search bar
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
@@ -200,7 +268,10 @@ fun Search(context: Context) {
                             )
                             Spacer(modifier = Modifier.size(15.dp))
                             Column(horizontalAlignment = Alignment.Start) {
-                                Text(text = it.name, fontWeight = FontWeight.Bold)
+                                Text(
+                                    text = it.name,
+                                    fontWeight = FontWeight.Bold
+                                )
                                 Text(text = it.school.name)
                             }
                         }
@@ -215,7 +286,12 @@ fun Search(context: Context) {
                             Row(modifier = Modifier.padding(10.dp)) {
                                 Row(modifier = Modifier.fillMaxWidth()) {
                                     Column {
-                                        Row { Text(text = "LEVEL", fontWeight = FontWeight.Bold) }
+                                        Row {
+                                            Text(
+                                                text = "LEVEL",
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
                                         Row { Text(text = it.level.toString()) }
                                     }
                                 }
@@ -246,4 +322,20 @@ fun Search(context: Context) {
             }
         }
     }
+}
+
+
+
+fun wasScreenVisitedBefore(context: Context): Boolean {
+    val sharedPreferences =
+        context.getSharedPreferences(Constants.REFERENCE_NAME, Context.MODE_PRIVATE)
+    return sharedPreferences.getBoolean(Constants.SCREEN_VISITED_KEY, false)
+}
+
+fun setScreenAsVisited(context: Context, status: Boolean) {
+    val sharedPreferences =
+        context.getSharedPreferences(Constants.REFERENCE_NAME, Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putBoolean(Constants.SCREEN_VISITED_KEY, status)
+    editor.apply()
 }
