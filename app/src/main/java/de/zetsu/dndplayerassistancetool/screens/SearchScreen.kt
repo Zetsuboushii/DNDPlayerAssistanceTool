@@ -3,7 +3,6 @@ package de.zetsu.dndplayerassistancetool.screens
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,8 +17,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -139,7 +136,7 @@ fun Search(context: Context) {
         if (loaded) {
             // spell cards
             items(spellDetailList) {
-                Box(modifier = Modifier.background(Color.White)) {
+                Box() {
                     var expanded by remember { mutableStateOf(expands.contains(it)) }
                     var selected by remember { mutableStateOf(selects.contains(it)) }
                     SpellCard(
