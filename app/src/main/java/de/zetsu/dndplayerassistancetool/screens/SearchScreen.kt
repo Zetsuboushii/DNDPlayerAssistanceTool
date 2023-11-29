@@ -4,26 +4,11 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -36,20 +21,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import de.zetsu.dndplayerassistancetool.CacheManager
 import de.zetsu.dndplayerassistancetool.Constants
-import de.zetsu.dndplayerassistancetool.R
 import de.zetsu.dndplayerassistancetool.SpellProvider
+import de.zetsu.dndplayerassistancetool.composables.GoToTopButton
+import de.zetsu.dndplayerassistancetool.composables.SimpleSearchBar
+import de.zetsu.dndplayerassistancetool.composables.SpellCard
 import de.zetsu.dndplayerassistancetool.dataclasses.Spell
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
-import kotlinx.coroutines.launch
 
 @Composable
 fun Search(context: Context) {
@@ -129,132 +111,59 @@ fun Search(context: Context) {
         }
     }
 
-    if (loaded) {
-        // spell cards + search bar
-        val listState = rememberLazyListState()
-        val coroutineScope = rememberCoroutineScope()
+//--------------------------Mauer---------------------
 
-        LazyColumn(state = listState) {
-            item {
-                // Search Bar
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    var text by remember { mutableStateOf(TextFieldValue("")) }
-                    OutlinedTextField(
-                        value = text,
-                        onValueChange = { text = it },
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_search),
-                                contentDescription = null
-                            )
-                        },
-                        modifier = Modifier.padding(8.dp)
-                    )
+    // spell cards + search bar
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    val expands = remember { mutableListOf<SpellDetail>() }
+    val selects = remember { mutableListOf<SpellDetail>() }
+
+    spellDetailList.sortBy { it.name }
+
+    LazyColumn(state = listState) {
+        item {
+            SimpleSearchBar(
+                onSearch = { search ->
+                    spellDetailList = spellDetailList.filter {
+                        it.name.startsWith(search, ignoreCase = true)
+                    }.toMutableList()
+                    for (i in 0 until spellDetailList.size) {
+                        Log.d("SearchResults", spellDetailList[i].name)
+                    }
                 }
-            }
-
+            )
+        }
+        if (loaded) {
             // spell cards
             items(spellDetailList) {
                 Box(modifier = Modifier.background(Color.White)) {
-                    var expanded by remember { mutableStateOf(false) }
-                    ElevatedCard(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                            .clickable(
-                                onClick = { expanded = !expanded }
-                            )
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(10.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(
-                                    when (it.school.index) {
-                                        "abjuration" -> R.drawable.ic_school_abjuration
-                                        "conjuration" -> R.drawable.ic_school_conjuration
-                                        "divination" -> R.drawable.ic_school_divination
-                                        "enchantment" -> R.drawable.ic_school_enchantment
-                                        "evocation" -> R.drawable.ic_school_evocation
-                                        "illusion" -> R.drawable.ic_school_illusion
-                                        "necromancy" -> R.drawable.ic_school_necromancy
-                                        "transmutation" -> R.drawable.ic_school_transmutation
-                                        else -> R.drawable.ic_taunt_fill
-                                    }
-                                ),
-                                contentDescription = null,
-                                modifier = Modifier.size(35.dp)
-                            )
-                            Text(
-                                text = it.level.toString(),
-                                modifier = Modifier.padding(5.dp)
-                            )
-                            Spacer(modifier = Modifier.size(15.dp))
-                            Column(horizontalAlignment = Alignment.Start) {
-                                Text(
-                                    text = it.name,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(text = it.school.name)
-                            }
+                    var expanded by remember { mutableStateOf(expands.contains(it)) }
+                    var selected by remember { mutableStateOf(selects.contains(it)) }
+                    SpellCard(
+                        spell = it,
+                        expanded = expanded,
+                        onClick = {
+                            expanded = !expanded
+                            if (expanded) expands.add(it) else expands.remove(it)
+                        },
+                        selected = selected,
+                        onLongClick = {
+                            selected = !selected
+                            if (selected) selects.add(it) else selects.remove(it)
                         }
-                        if (expanded) {
-                            var description = ""
-                            for (i in 0 until it.desc.size) {
-                                description += it.desc[i]
-                                if (i < it.desc.size - 1) {
-                                    description += "\n"
-                                }
-                            }
-                            Row(modifier = Modifier.padding(10.dp)) {
-                                Row(modifier = Modifier.fillMaxWidth()) {
-                                    Column {
-                                        Row {
-                                            Text(
-                                                text = "LEVEL",
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        }
-                                        Row { Text(text = it.level.toString()) }
-                                    }
-                                }
-                                Row { Text(text = description) }
-                            }
-                        }
-                    }
+                    )
                 }
             }
         }
-
-        // back to top floating action button
-        Box(modifier = Modifier.fillMaxSize()) {
-            FloatingActionButton(
-                onClick = {
-                    coroutineScope.launch {
-                        listState.animateScrollToItem(index = 0)
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrowup),
-                    contentDescription = null
-                )
-            }
-        }
+    }
+    Box(contentAlignment = Alignment.BottomEnd) {
+        // Row { AddToBookButton(onClick = {  }) }
+        Row { GoToTopButton(coroutineScope = coroutineScope, lazyListState = listState) }
     }
 }
 
+//--------------------Mauer---------------------------
 
 fun wasScreenVisitedBefore(context: Context): Boolean {
     val sharedPreferences =
