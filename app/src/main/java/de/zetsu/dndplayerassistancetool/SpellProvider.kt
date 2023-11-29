@@ -39,6 +39,7 @@ class SpellProvider(private val context: Context) {
         queue.add(jsonRequest)
     }
 
+    // create API call to get detailed spell information's based on its index
     fun loadSpellDetails(index: String, callback: (SpellDetail) -> Unit) {
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url.plus("/").plus(index), null,
@@ -52,7 +53,7 @@ class SpellProvider(private val context: Context) {
 
             },
             { error ->
-                Log.d("APILog", "Error loading spell details: $error")
+                Log.d("APILog", "Error loading spell details: ${error}")
                 handleError(error)
             })
 
