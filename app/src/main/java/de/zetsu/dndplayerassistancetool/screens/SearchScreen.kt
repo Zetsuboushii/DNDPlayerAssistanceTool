@@ -112,6 +112,7 @@ fun Search(context: Context) {
         }
     }
 
+
 //--------------------------Mauer---------------------
 
     // spell cards + search bar
