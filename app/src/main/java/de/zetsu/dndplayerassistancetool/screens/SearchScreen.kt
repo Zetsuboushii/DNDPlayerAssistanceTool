@@ -2,6 +2,7 @@ package de.zetsu.dndplayerassistancetool.screens
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -25,16 +26,12 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import de.zetsu.dndplayerassistancetool.CacheManager
 import de.zetsu.dndplayerassistancetool.Constants
-import de.zetsu.dndplayerassistancetool.R
 import de.zetsu.dndplayerassistancetool.SpellProvider
-import de.zetsu.dndplayerassistancetool.composables.AddToBookButton
 import de.zetsu.dndplayerassistancetool.composables.GoToTopButton
 import de.zetsu.dndplayerassistancetool.composables.SimpleSearchBar
 import de.zetsu.dndplayerassistancetool.composables.SpellCard
 import de.zetsu.dndplayerassistancetool.dataclasses.Spell
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
-import de.zetsu.dndplayerassistancetool.dataclasses.SpellListItem
-import kotlinx.coroutines.launch
 
 @Composable
 fun Search(context: Context) {
@@ -116,32 +113,31 @@ fun Search(context: Context) {
 
 //--------------------------Mauer---------------------
 
-    if (loaded) {
-        // spell cards + search bar
-        val listState = rememberLazyListState()
-        val coroutineScope = rememberCoroutineScope()
-        val expands = remember { mutableListOf<SpellDetail>() }
-        val selects = remember { mutableListOf<SpellDetail>() }
+    // spell cards + search bar
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    val expands = remember { mutableListOf<SpellDetail>() }
+    val selects = remember { mutableListOf<SpellDetail>() }
 
-        spellDetailList.sortBy { it.name }
+    spellDetailList.sortBy { it.name }
 
-        LazyColumn(state = listState) {
-            item {
-                SimpleSearchBar(
-                    onSearch = { search ->
-                        spellDetailList = spellDetailList.filter {
-                            it.name.startsWith(search, ignoreCase = true)
-                        }.toMutableList()
-                        for (i in 0 until spellDetailList.size) {
-                            Log.d("SearchResults", spellDetailList[i].name)
-                        }
+    LazyColumn(state = listState) {
+        item {
+            SimpleSearchBar(
+                onSearch = { search ->
+                    spellDetailList = spellDetailList.filter {
+                        it.name.startsWith(search, ignoreCase = true)
+                    }.toMutableList()
+                    for (i in 0 until spellDetailList.size) {
+                        Log.d("SearchResults", spellDetailList[i].name)
                     }
-                )
-            }
-            if (loaded) {
-                // spell cards
-                items(spellDetailList) {
-                    Box(modifier = Modifier.background(Color.White)) {
+                }
+            )
+        }
+        if (loaded) {
+            // spell cards
+            items(spellDetailList) {
+                Box(modifier = Modifier.background(Color.White)) {
                     var expanded by remember { mutableStateOf(expands.contains(it)) }
                     var selected by remember { mutableStateOf(selects.contains(it)) }
                     SpellCard(
@@ -158,27 +154,27 @@ fun Search(context: Context) {
                         }
                     )
                 }
-                }
             }
         }
-        Box(contentAlignment = Alignment.BottomEnd) {
-            Row { AddToBookButton(onClick = { /*TODO*/ }) }
-            Row { GoToTopButton(coroutineScope = coroutineScope, lazyListState = listState) }
-        }
     }
+    Box(contentAlignment = Alignment.BottomEnd) {
+        // Row { AddToBookButton(onClick = {  }) }
+        Row { GoToTopButton(coroutineScope = coroutineScope, lazyListState = listState) }
+    }
+}
 
 //--------------------Mauer---------------------------
 
-    fun wasScreenVisitedBefore(context: Context): Boolean {
-        val sharedPreferences =
-            context.getSharedPreferences(Constants.REFERENCE_NAME, Context.MODE_PRIVATE)
-        return sharedPreferences.getBoolean(Constants.SCREEN_VISITED_KEY, false)
-    }
+fun wasScreenVisitedBefore(context: Context): Boolean {
+    val sharedPreferences =
+        context.getSharedPreferences(Constants.REFERENCE_NAME, Context.MODE_PRIVATE)
+    return sharedPreferences.getBoolean(Constants.SCREEN_VISITED_KEY, false)
+}
 
-    fun setScreenAsVisited(context: Context, status: Boolean) {
-        val sharedPreferences =
-            context.getSharedPreferences(Constants.REFERENCE_NAME, Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putBoolean(Constants.SCREEN_VISITED_KEY, status)
-        editor.apply()
-    }
+fun setScreenAsVisited(context: Context, status: Boolean) {
+    val sharedPreferences =
+        context.getSharedPreferences(Constants.REFERENCE_NAME, Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putBoolean(Constants.SCREEN_VISITED_KEY, status)
+    editor.apply()
+}
