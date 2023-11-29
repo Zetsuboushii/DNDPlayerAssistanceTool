@@ -77,7 +77,8 @@ fun Search(context: Context) {
                                     ).show()
                                 } else {
                                     //case: no internet with cache
-                                    spellDetailList = spellDetails.toMutableList()
+                                    spellDetailList.clear()
+                                    spellDetailList.addAll(spellDetails.toMutableList())
                                     loaded = true
                                 }
                             }
