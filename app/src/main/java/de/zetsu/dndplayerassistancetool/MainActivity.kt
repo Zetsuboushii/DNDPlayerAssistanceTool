@@ -24,12 +24,14 @@ import androidx.navigation.compose.rememberNavController
 import de.zetsu.dndplayerassistancetool.screens.Home
 import de.zetsu.dndplayerassistancetool.screens.Search
 import de.zetsu.dndplayerassistancetool.screens.SpellBook
+import de.zetsu.dndplayerassistancetool.screens.setScreenAsVisited
 import de.zetsu.dndplayerassistancetool.ui.theme.DndplayerassistancetoolTheme
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setScreenAsVisited(applicationContext, false)
         setContent {
             DndplayerassistancetoolTheme {
 
