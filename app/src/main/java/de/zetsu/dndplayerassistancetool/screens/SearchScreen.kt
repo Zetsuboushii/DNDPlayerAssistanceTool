@@ -99,7 +99,6 @@ fun Search(context: Context) {
                                     loaded = true
                                 }
                             }
-
                         } else {
                             //load data from cache
                             spellListCacheManager.loadSpellListFromCache()?.toMutableStateList()
