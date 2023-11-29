@@ -1,9 +1,9 @@
 package de.zetsu.dndplayerassistancetool
 
 import android.content.Context
-import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 import java.io.File
 
 class CacheManager(private val context: Context) {
@@ -32,5 +32,6 @@ class CacheManager(private val context: Context) {
             null
         }
          */
+
     }
 }

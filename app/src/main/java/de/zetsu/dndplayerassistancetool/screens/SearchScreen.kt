@@ -86,6 +86,7 @@ fun Search(context: Context) {
                                 // load data from cache if no network
                                 val spellDetails =
                                     spellListCacheManager.loadSpellListFromCache()
+                                // case: no internet without cache
                                 if (spellDetails == null) {
                                     Toast.makeText(
                                         context,
@@ -93,6 +94,7 @@ fun Search(context: Context) {
                                         Toast.LENGTH_LONG
                                     ).show()
                                 } else {
+                                    //case: no internet with cache
                                     spellDetailList = spellDetails.toMutableList()
                                     loaded = true
                                 }

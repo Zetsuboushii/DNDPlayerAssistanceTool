@@ -77,7 +77,17 @@ class SpellProvider(private val context: Context) {
                 }
             }
         }
+    }
 
+    fun loadSelectedSpellDetailsFromCache() {
+        //TODO:Implement loadSelectedSpellDetailsFromCache
+
+        // load selected-cache
+        // filter indexes from full-cache by indexes from selected-cache
+        // parse the selected SpellDetails
+        // add the parsed SpellDetails to a List<SpellDetails>
+
+        // or save the detailed-selectedSpells in cache and simply load it
     }
 
     private fun handleError(exception: Exception) {
