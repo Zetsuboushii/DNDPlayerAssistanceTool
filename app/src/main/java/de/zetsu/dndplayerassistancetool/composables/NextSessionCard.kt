@@ -25,15 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.zetsu.dndplayerassistancetool.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStreamReader
-import java.net.URL
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Scanner
+import de.zetsu.dndplayerassistancetool.fetchData
 
 @Composable
 fun NextSessionCard() {
@@ -44,7 +36,6 @@ fun NextSessionCard() {
             nextSession = result
         }
     }
-
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -87,24 +78,6 @@ fun NextSessionCard() {
                     )
                 }
             }
-        }
-    }
-}
-fun fetchData(onResult: (String) -> Unit) {
-    val fileUrl = "https://raw.githubusercontent.com/Zetsuboushii/DNDPlayerAssistanceTool/master/NextSession"
-
-    runBlocking(Dispatchers.IO) {
-        try {
-            val url = URL(fileUrl)
-            val connection = url.openConnection()
-            connection.connect()
-
-            val bufferedReader = BufferedReader(InputStreamReader(connection.getInputStream()))
-            val urlContent = bufferedReader.use { it.readText() }
-
-            onResult(urlContent)
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 }
