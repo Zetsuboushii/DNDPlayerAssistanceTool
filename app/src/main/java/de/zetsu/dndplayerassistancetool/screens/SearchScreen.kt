@@ -63,6 +63,7 @@ fun Search(context: Context) {
                                 spellProvider.loadAllSpellDetails {
                                     spellDetailList.clear()
                                     spellDetailList.addAll(it)
+                                    spellDetailList.sortBy { it.name }
                                     loaded = true
                                 }
                             }
@@ -81,6 +82,7 @@ fun Search(context: Context) {
                                     //case: no internet with cache
                                     spellDetailList.clear()
                                     spellDetailList.addAll(spellDetails.toMutableList())
+                                    spellDetailList.sortBy { it.name }
                                     loaded = true
                                 }
                             }
@@ -91,6 +93,7 @@ fun Search(context: Context) {
                                     spellDetailList.clear()
                                     spellDetailList.addAll(it)
                                     Log.d("Cache", "loaded Spells from cache")
+                                    spellDetailList.sortBy { it.name }
                                     loaded = true
                                 } ?: {
                                 Log.d("Cache", "Error: loading cache")
@@ -117,8 +120,6 @@ fun Search(context: Context) {
 //--------------------------Mauer---------------------
 
     // spell cards + search bar
-    spellDetailList.sortBy { it.name }
-
     LazyColumn(state = listState) {
         item {
             SimpleSearchBar(
