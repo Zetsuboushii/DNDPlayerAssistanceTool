@@ -40,6 +40,11 @@ fun Search(context: Context) {
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val spellListCacheManager = CacheManager(context)
 
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    val expands = remember { mutableListOf<SpellDetail>() }
+    val selects = remember { mutableListOf<SpellDetail>() }
+
     var loaded by remember { mutableStateOf(false) }
 
     DisposableEffect(lifecycleOwner) {
@@ -109,15 +114,9 @@ fun Search(context: Context) {
         }
     }
 
-
 //--------------------------Mauer---------------------
 
     // spell cards + search bar
-    val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-    val expands = remember { mutableListOf<SpellDetail>() }
-    val selects = remember { mutableListOf<SpellDetail>() }
-
     spellDetailList.sortBy { it.name }
 
     LazyColumn(state = listState) {
