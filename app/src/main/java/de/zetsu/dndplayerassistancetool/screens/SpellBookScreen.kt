@@ -2,6 +2,7 @@ package de.zetsu.dndplayerassistancetool.screens
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,6 +25,13 @@ fun SpellBook(context: Context) {
             spellDetailList.addAll(it)
         }
     }
+    var moin = mutableListOf<String>()
+    for (i in 0 until spellDetailList.size) {
+        moin.add(spellDetailList[i].name)
+        Column {
+            Text(text = moin.toString())
+        }
+    }
     Log.d("SpellBook", spellDetailList.toString())
-    Text(text = "SpellDetail Book")
+    //Text(text = "SpellDetail Book")
 }
