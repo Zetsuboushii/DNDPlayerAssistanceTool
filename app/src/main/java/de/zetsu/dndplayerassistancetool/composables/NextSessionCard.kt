@@ -13,6 +13,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -20,11 +25,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.zetsu.dndplayerassistancetool.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import java.io.BufferedReader
+import java.io.File
+import java.io.InputStreamReader
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Scanner
 
 @Composable
 fun NextSessionCard() {
+    var nextSession by remember { mutableStateOf("Loading...") }
+
+    LaunchedEffect(key1 = true) {
+        fetchData { result ->
+            nextSession = result
+        }
+    }
+
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -50,24 +71,40 @@ fun NextSessionCard() {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp),
+                    .padding(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row {
                     Icon(
                         painter = painterResource(R.drawable.ic_event_fill),
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier.size(45.dp)
                     )
                     Text(
-                        text = SimpleDateFormat("dd.MM.yyyy").format(Date()),
-                        fontSize = 30.sp
+                        text = nextSession,
+                        fontSize = 35.sp,
                     )
                 }
             }
+        }
+    }
+}
+fun fetchData(onResult: (String) -> Unit) {
+    val fileUrl = "https://raw.githubusercontent.com/Zetsuboushii/DNDPlayerAssistanceTool/master/NextSession"
+
+    runBlocking(Dispatchers.IO) {
+        try {
+            val url = URL(fileUrl)
+            val connection = url.openConnection()
+            connection.connect()
+
+            val bufferedReader = BufferedReader(InputStreamReader(connection.getInputStream()))
+            val urlContent = bufferedReader.use { it.readText() }
+
+            onResult(urlContent)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }
