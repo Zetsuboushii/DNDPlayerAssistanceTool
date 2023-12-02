@@ -7,10 +7,26 @@ import com.android.volley.NoConnectionError
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import de.zetsu.dndplayerassistancetool.dataclasses.Spell
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
+import java.io.File
+import java.io.FileNotFoundException
 
 class SpellProvider(private val context: Context) {
+
+    class NoSpellsSelectedException : Exception()
+
+    companion object {
+        private fun filterByIndex(
+            indices: List<String>,
+            spellDetails: List<SpellDetail>
+        ): List<SpellDetail> {
+            if (indices.isEmpty()) throw NoSpellsSelectedException()
+            return spellDetails.filter { indices.contains(it.index) }
+        }
+    }
 
     val queue = Volley.newRequestQueue(context)
     val url = "http://www.dnd5eapi.co/api/spells"
@@ -62,6 +78,7 @@ class SpellProvider(private val context: Context) {
     }
 
     fun loadAllSpellDetails(callback: (List<SpellDetail>) -> Unit) {
+        Log.d("APILoadFlag", "started api calls")
         var spellDetailList = mutableListOf<SpellDetail>()
         for (spell in spellList) {
             loadSpellDetails(spell.index) { spellDetail ->
@@ -80,20 +97,59 @@ class SpellProvider(private val context: Context) {
         }
     }
 
-    fun loadSelectedSpellDetailsFromCache() {
-        //TODO:Implement loadSelectedSpellDetailsFromCache
-
-        // load selected-cache
-        // filter indexes from full-cache by indexes from selected-cache
-        // parse the selected SpellDetails
-        // add the parsed SpellDetails to a List<SpellDetails>
-
-        // or save the detailed-selectedSpells in cache and simply load it
+    fun loadAllSpellDetailData(
+        successCallback: (List<SpellDetail>) -> Unit,
+        errorCallback: (Exception) -> Unit
+    ) {
+        loadSpellList(callback = { _ ->
+            loadAllSpellDetails(callback = successCallback)
+        }, errorCallback = errorCallback)
     }
 
-    private fun handleError(exception: Exception) {
+    private fun getSelectedIndicesFile() =
+        File(context.filesDir, Constants.SELECTED_SPEELS_FILE_NAME)
+
+    fun saveSelectedIndices(spellDetails: List<SpellDetail>) {
+        val gson = Gson()
+        val json = gson.toJson(spellDetails.map { it.index })
+        getSelectedIndicesFile().writeText(json)
+    }
+
+    fun loadSelectedIndices(): List<String> {
+        val gson = Gson()
+        val type = object : TypeToken<List<String>>() {}.type
+        return gson.fromJson(getSelectedIndicesFile().readText(), type)
+    }
+
+    fun loadSelectedSpells(callback: (List<SpellDetail>) -> Unit) {
+        // if no selected list on disk
+        val indices = try {
+            loadSelectedIndices()
+        } catch (e: Exception) {
+            null
+        }
+        // if no SpellDetailsList in cache make api call, else load from cache
+        try {
+            cacheManager.loadSpellDetailListFromCache()?.let {
+                callback.invoke(filterByIndex(indices ?: listOf(), it))
+            }
+        } catch (exception: NoSpellsSelectedException) {
+            handleError(exception)
+        } catch (exception: Exception) {
+            loadAllSpellDetailData(successCallback = {
+                callback.invoke(filterByIndex(indices ?: listOf(), it))
+            }) {
+                handleError(it)
+            }
+        }
+
+    }
+
+    fun handleError(exception: Exception) {
         val errorMessage: String = when (exception) {
             is NoConnectionError -> "No internet connection, load from cache"
+            is FileNotFoundException -> "No cache available try loading again with an internet connection"
+            is NoSpellsSelectedException -> "No spells were selected go to Spell Search and select some spells"
             else -> "Error occurred: ${exception.message}"
         }
         Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()

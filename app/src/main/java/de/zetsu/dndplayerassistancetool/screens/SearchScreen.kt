@@ -43,7 +43,7 @@ fun Search(context: Context) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val expands = remember { mutableListOf<SpellDetail>() }
-    val selects = remember { mutableListOf<SpellDetail>() }
+    var selects = remember { mutableListOf<SpellDetail>() }
 
     var loaded by remember { mutableStateOf(false) }
 
@@ -51,59 +51,82 @@ fun Search(context: Context) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
-                    if (!loaded) {
-                        if (!wasScreenVisitedBefore(context)) {
-                            //get data from network
-                            setScreenAsVisited(context, true)
-                            spellProvider.loadSpellList(callback = { spells ->
-                                spellList.clear()
-                                spellList.addAll(spells)
-                                // Load the data from the network
-                                Log.d("cache", "load data from network")
-                                spellProvider.loadAllSpellDetails {
+                    try {
+                        if (!loaded) {
+                            if (!wasScreenVisitedBefore(context)) {
+                                //get data from network
+                                setScreenAsVisited(context, true)
+
+                                spellProvider.loadAllSpellDetailData(successCallback = {
                                     spellDetailList.clear()
                                     spellDetailList.addAll(it)
                                     spellDetailList.sortBy { it.name }
-                                    loaded = true
+                                    //TODO: make new function for loadSelected Spells,
+                                    // which can only load from cache and doesn't throw toast for
+                                    // not selected spells
+                                    spellProvider.loadSelectedSpells {
+                                        selects.clear()
+                                        selects.addAll(it)
+                                        loaded = true
+                                    }
+                                    //TODO: Fix error where Screen is written before Selects is fully ready
+
+                                }) {
+                                    // load data from cache if no network
+                                    val spellDetails =
+                                        spellListCacheManager.loadSpellDetailListFromCache()
+                                    // case: no internet without cache
+                                    if (spellDetails == null) {
+                                        Toast.makeText(
+                                            context,
+                                            "No cache available try loading again with an internet connection",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    } else {
+                                        //case: no internet with cache
+                                        spellDetailList.clear()
+                                        spellDetailList.addAll(spellDetails.toMutableList())
+                                        spellDetailList.sortBy { it.name }
+                                        spellProvider.loadSelectedSpells {
+                                            selects.clear()
+                                            selects.addAll(it)
+                                            loaded = true
+                                        }
+
+                                    }
                                 }
-                            }
-                            ) { _ ->
-                                // load data from cache if no network
-                                val spellDetails =
-                                    spellListCacheManager.loadSpellListFromCache()
-                                // case: no internet without cache
-                                if (spellDetails == null) {
-                                    Toast.makeText(
-                                        context,
-                                        "No cache available try loading again with an internet connection",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                } else {
-                                    //case: no internet with cache
-                                    spellDetailList.clear()
-                                    spellDetailList.addAll(spellDetails.toMutableList())
-                                    spellDetailList.sortBy { it.name }
-                                    loaded = true
+                            } else {
+                                //load data from cache
+                                spellListCacheManager.loadSpellDetailListFromCache()
+                                    ?.toMutableStateList()
+                                    ?.let {
+                                        spellDetailList.clear()
+                                        spellDetailList.addAll(it)
+                                        Log.d("Cache", "loaded Spells from cache")
+                                        spellDetailList.sortBy { it.name }
+                                        spellProvider.loadSelectedSpells {
+                                            selects.clear()
+                                            selects.addAll(it)
+                                            loaded = true
+                                        }
+
+                                    } ?: {
+                                    Log.d("Cache", "Error: loading cache")
                                 }
-                            }
-                        } else {
-                            //load data from cache
-                            spellListCacheManager.loadSpellListFromCache()?.toMutableStateList()
-                                ?.let {
-                                    spellDetailList.clear()
-                                    spellDetailList.addAll(it)
-                                    Log.d("Cache", "loaded Spells from cache")
-                                    spellDetailList.sortBy { it.name }
-                                    loaded = true
-                                } ?: {
-                                Log.d("Cache", "Error: loading cache")
                             }
                         }
+                    } catch (exception: Exception) {
+                        spellProvider.handleError(exception)
                     }
                 }
 
+                Lifecycle.Event.ON_PAUSE -> {
+                    spellProvider.saveSelectedIndices(selects)
+                    Log.d("Lifecycle", "On_Pause")
+                }
+
                 Lifecycle.Event.ON_DESTROY -> {
-                    println("on destroy")
+                    Log.d("Lifecycle", "On_Destroy")
                 }
 
                 else -> {}
@@ -120,6 +143,7 @@ fun Search(context: Context) {
 //--------------------------Mauer---------------------
 
     // spell cards + search bar
+
     LazyColumn(state = listState) {
         item {
             SimpleSearchBar(

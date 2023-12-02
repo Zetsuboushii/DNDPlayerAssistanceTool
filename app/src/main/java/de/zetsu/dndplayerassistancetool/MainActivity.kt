@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(Screen.Home.route) { Home() }
                             composable(Screen.Search.route) { Search(this@MainActivity) }
-                            composable(Screen.SpellBook.route) { SpellBook() }
+                            composable(Screen.SpellBook.route) { SpellBook(this@MainActivity) }
                         }
                     }
                 }
