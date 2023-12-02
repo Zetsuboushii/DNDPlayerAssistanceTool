@@ -1,4 +1,4 @@
-package de.zetsu.dndplayerassistancetool.screens
+package de.zetsu.dndplayerassistancetool.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column

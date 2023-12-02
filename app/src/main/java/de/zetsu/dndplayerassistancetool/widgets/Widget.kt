@@ -1,4 +1,4 @@
-package de.zetsu.dndplayerassistancetool
+package de.zetsu.dndplayerassistancetool.widgets
 
 import android.content.Context
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +27,8 @@ import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
+import de.zetsu.dndplayerassistancetool.R
+import de.zetsu.dndplayerassistancetool.fetchData
 
 class Widget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {

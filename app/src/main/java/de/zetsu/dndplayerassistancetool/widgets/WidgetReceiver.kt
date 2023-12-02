@@ -1,4 +1,4 @@
-package de.zetsu.dndplayerassistancetool
+package de.zetsu.dndplayerassistancetool.widgets
 
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
