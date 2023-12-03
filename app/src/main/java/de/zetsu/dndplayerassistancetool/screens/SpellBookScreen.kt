@@ -76,5 +76,4 @@ fun SpellBook(context: Context) {
         // Row { AddToBookButton(onClick = {  }) }
         Row { GoToTopButton(coroutineScope = coroutineScope, lazyListState = listState) }
     }
-
 }
