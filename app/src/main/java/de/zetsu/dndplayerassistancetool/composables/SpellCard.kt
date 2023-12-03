@@ -1,20 +1,16 @@
 package de.zetsu.dndplayerassistancetool.composables
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -25,23 +21,42 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import de.zetsu.dndplayerassistancetool.R
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
+import de.zetsu.dndplayerassistancetool.ui.theme.Purple80
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SpellCard(spell: SpellDetail, expanded: Boolean, onClick: () -> Unit) {
+fun SpellCard(
+    spell: SpellDetail,
+    expanded: Boolean,
+    onClick: () -> Unit,
+    selected: Boolean,
+    onLongClick: () -> Unit
+) {
+    val haptics = LocalHapticFeedback.current
     ElevatedCard(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = if (!selected) {
+                MaterialTheme.colorScheme.surfaceVariant
+            } else {
+                Purple80
+            }
         ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .clickable(
-                onClick = { onClick.invoke() }
+            .combinedClickable(
+                onClick = { onClick.invoke() },
+                onLongClick = {
+                    onLongClick.invoke()
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                }
             )
     ) {
         Row(
@@ -84,6 +99,7 @@ fun SpellCard(spell: SpellDetail, expanded: Boolean, onClick: () -> Unit) {
                 }
             }
 
+            //Spell Attributes
             Row(Modifier.fillMaxWidth()) {
                 Column(Modifier.weight(1f)) {
                     SpellAttributeBlock(
@@ -115,8 +131,29 @@ fun SpellCard(spell: SpellDetail, expanded: Boolean, onClick: () -> Unit) {
             }
 
             Divider(Modifier.padding(10.dp), thickness = 2.dp)
-            Row(modifier = Modifier.padding(10.dp)) {
+
+            //Description
+            val scrollState = rememberScrollState()
+            Row(
+                modifier = Modifier
+                    .padding(10.dp)
+                    .height(300.dp)
+                    .verticalScroll(scrollState)
+            ) {
                 Text(text = description)
+            }
+
+            //Classes
+            Row(
+                Modifier
+                    .padding(horizontal = 10.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                for (i in 0 until spell.classes.size) {
+                    Text(text = spell.classes[i].name)
+                    if (i < spell.classes.size - 1) Text(text = " ⋅ ")
+                }
             }
         }
     }
