@@ -61,13 +61,14 @@ fun Search(context: Context) {
                                     spellDetailList.clear()
                                     spellDetailList.addAll(it)
                                     spellDetailList.sortBy { it.name }
+                                    loaded = true
                                     //TODO: make new function for loadSelected Spells,
                                     // which can only load from cache and doesn't throw toast for
                                     // not selected spells
                                     spellProvider.loadSelectedSpells {
                                         selects.clear()
                                         selects.addAll(it)
-                                        loaded = true
+                                        //loaded = true
                                     }
                                     //TODO: Fix error where Screen is written before Selects is fully ready
 
@@ -87,10 +88,11 @@ fun Search(context: Context) {
                                         spellDetailList.clear()
                                         spellDetailList.addAll(spellDetails.toMutableList())
                                         spellDetailList.sortBy { it.name }
+                                        loaded = true
                                         spellProvider.loadSelectedSpells {
                                             selects.clear()
                                             selects.addAll(it)
-                                            loaded = true
+                                            //loaded = true
                                         }
 
                                     }
@@ -104,18 +106,19 @@ fun Search(context: Context) {
                                         spellDetailList.addAll(it)
                                         Log.d("Cache", "loaded Spells from cache")
                                         spellDetailList.sortBy { it.name }
+                                        loaded = true
                                         spellProvider.loadSelectedSpells {
                                             selects.clear()
                                             selects.addAll(it)
-                                            loaded = true
+                                            //loaded = true
                                         }
-
                                     } ?: {
                                     Log.d("Cache", "Error: loading cache")
                                 }
                             }
                         }
                     } catch (exception: Exception) {
+                        loaded = true
                         spellProvider.handleError(exception)
                     }
                 }
