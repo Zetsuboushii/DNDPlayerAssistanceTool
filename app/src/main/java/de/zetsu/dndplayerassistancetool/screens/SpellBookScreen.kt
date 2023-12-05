@@ -6,6 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -19,8 +21,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import de.zetsu.dndplayerassistancetool.SpellProvider
 import de.zetsu.dndplayerassistancetool.composables.GoToTopButton
+import de.zetsu.dndplayerassistancetool.composables.HeaderSection
 import de.zetsu.dndplayerassistancetool.composables.SpellCard
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 
@@ -49,7 +53,12 @@ fun SpellBook(context: Context) {
         }
     }
     Log.d("SpellBook", spellDetailList.toString())
-    //Text(text = "SpellDetail Book")
+
+
+    HeaderSection()
+
+
+    Spacer(modifier = Modifier.size(100.dp))
     LazyColumn(state = listState) {
         // Display selected spells
         items(spellDetailList) { spell ->
