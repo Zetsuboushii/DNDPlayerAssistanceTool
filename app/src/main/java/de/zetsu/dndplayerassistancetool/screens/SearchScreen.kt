@@ -54,23 +54,21 @@ fun Search(context: Context) {
                     try {
                         if (!loaded) {
                             if (!wasScreenVisitedBefore(context)) {
-                                //get data from network
+                                //load cache and then update it via api call
                                 setScreenAsVisited(context, true)
+
+                                // load cache from file then update cache via API
 
                                 spellProvider.loadAllSpellDetailData(successCallback = {
                                     spellDetailList.clear()
                                     spellDetailList.addAll(it)
                                     spellDetailList.sortBy { it.name }
-                                    loaded = true
-                                    //TODO: make new function for loadSelected Spells,
-                                    // which can only load from cache and doesn't throw toast for
-                                    // not selected spells
+
                                     spellProvider.loadSelectedSpells {
                                         selects.clear()
                                         selects.addAll(it)
-                                        //loaded = true
+                                        loaded = true
                                     }
-                                    //TODO: Fix error where Screen is written before Selects is fully ready
 
                                 }) {
                                     // load data from cache if no network
@@ -88,11 +86,11 @@ fun Search(context: Context) {
                                         spellDetailList.clear()
                                         spellDetailList.addAll(spellDetails.toMutableList())
                                         spellDetailList.sortBy { it.name }
-                                        loaded = true
+
                                         spellProvider.loadSelectedSpells {
                                             selects.clear()
                                             selects.addAll(it)
-                                            //loaded = true
+                                            loaded = true
                                         }
 
                                     }
@@ -126,10 +124,6 @@ fun Search(context: Context) {
                 Lifecycle.Event.ON_PAUSE -> {
                     spellProvider.saveSelectedIndices(selects)
                     Log.d("Lifecycle", "On_Pause")
-                }
-
-                Lifecycle.Event.ON_DESTROY -> {
-                    Log.d("Lifecycle", "On_Destroy")
                 }
 
                 else -> {}
@@ -193,13 +187,13 @@ fun Search(context: Context) {
 
 fun wasScreenVisitedBefore(context: Context): Boolean {
     val sharedPreferences =
-        context.getSharedPreferences(Constants.REFERENCE_NAME, Context.MODE_PRIVATE)
+        context.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE)
     return sharedPreferences.getBoolean(Constants.SCREEN_VISITED_KEY, false)
 }
 
 fun setScreenAsVisited(context: Context, status: Boolean) {
     val sharedPreferences =
-        context.getSharedPreferences(Constants.REFERENCE_NAME, Context.MODE_PRIVATE)
+        context.getSharedPreferences(Constants.PREFERENCE_NAME, Context.MODE_PRIVATE)
     val editor = sharedPreferences.edit()
     editor.putBoolean(Constants.SCREEN_VISITED_KEY, status)
     editor.apply()

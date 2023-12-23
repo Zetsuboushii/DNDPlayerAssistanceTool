@@ -16,14 +16,11 @@ import java.io.FileNotFoundException
 
 class SpellProvider(private val context: Context) {
 
-    class NoSpellsSelectedException : Exception()
-
     companion object {
         private fun filterByIndex(
             indices: List<String>,
             spellDetails: List<SpellDetail>
         ): List<SpellDetail> {
-            if (indices.isEmpty()) throw NoSpellsSelectedException()
             return spellDetails.filter { indices.contains(it.index) }
         }
     }
@@ -101,6 +98,8 @@ class SpellProvider(private val context: Context) {
         successCallback: (List<SpellDetail>) -> Unit,
         errorCallback: (Exception) -> Unit
     ) {
+        cacheManager.loadSpellDetailListFromCache()?.let(successCallback)
+
         loadSpellList(callback = { _ ->
             loadAllSpellDetails(callback = successCallback)
         }, errorCallback = errorCallback)
@@ -133,8 +132,6 @@ class SpellProvider(private val context: Context) {
             cacheManager.loadSpellDetailListFromCache()?.let {
                 callback.invoke(filterByIndex(indices ?: listOf(), it))
             }
-        } catch (exception: NoSpellsSelectedException) {
-            handleError(exception)
         } catch (exception: Exception) {
             loadAllSpellDetailData(successCallback = {
                 callback.invoke(filterByIndex(indices ?: listOf(), it))
@@ -142,18 +139,15 @@ class SpellProvider(private val context: Context) {
                 handleError(it)
             }
         }
-
     }
 
     fun handleError(exception: Exception) {
         val errorMessage: String = when (exception) {
             is NoConnectionError -> "No internet connection, load from cache"
             is FileNotFoundException -> "No cache available try loading again with an internet connection"
-            is NoSpellsSelectedException -> "No spells were selected go to Spell Search and select some spells"
             else -> "Error occurred: ${exception.message}"
         }
         Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
     }
-
 
 }

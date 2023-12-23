@@ -30,6 +30,8 @@ import de.zetsu.dndplayerassistancetool.ui.theme.DndplayerassistancetoolTheme
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val cacheManager = CacheManager(this)
+        cacheManager.checkForWritingBackUpIntoCache()
         super.onCreate(savedInstanceState)
         setScreenAsVisited(applicationContext, false)
         setContent {
