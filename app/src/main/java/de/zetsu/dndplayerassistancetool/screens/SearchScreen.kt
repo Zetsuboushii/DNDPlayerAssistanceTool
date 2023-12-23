@@ -53,6 +53,12 @@ fun Search(context: Context) {
                 Lifecycle.Event.ON_CREATE -> {
                     try {
                         if (!loaded) {
+
+                            spellProvider.loadSelectedSpells {
+                                selects.clear()
+                                selects.addAll(it)
+                            }
+
                             if (!wasScreenVisitedBefore(context)) {
                                 //load cache and then update it via api call
                                 setScreenAsVisited(context, true)
@@ -63,12 +69,7 @@ fun Search(context: Context) {
                                     spellDetailList.clear()
                                     spellDetailList.addAll(it)
                                     spellDetailList.sortBy { it.name }
-
-                                    spellProvider.loadSelectedSpells {
-                                        selects.clear()
-                                        selects.addAll(it)
-                                        loaded = true
-                                    }
+                                    loaded = true
 
                                 }) {
                                     // load data from cache if no network
@@ -86,13 +87,6 @@ fun Search(context: Context) {
                                         spellDetailList.clear()
                                         spellDetailList.addAll(spellDetails.toMutableList())
                                         spellDetailList.sortBy { it.name }
-
-                                        spellProvider.loadSelectedSpells {
-                                            selects.clear()
-                                            selects.addAll(it)
-                                            loaded = true
-                                        }
-
                                     }
                                 }
                             } else {
@@ -105,11 +99,7 @@ fun Search(context: Context) {
                                         Log.d("Cache", "loaded Spells from cache")
                                         spellDetailList.sortBy { it.name }
                                         loaded = true
-                                        spellProvider.loadSelectedSpells {
-                                            selects.clear()
-                                            selects.addAll(it)
-                                            //loaded = true
-                                        }
+
                                     } ?: {
                                     Log.d("Cache", "Error: loading cache")
                                 }
