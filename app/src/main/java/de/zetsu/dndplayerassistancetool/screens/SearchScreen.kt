@@ -54,13 +54,14 @@ fun Search(context: Context) {
                     try {
                         if (!loaded) {
 
+                            // load selected spells to show them as marked
                             spellProvider.loadSelectedSpells {
                                 selects.clear()
                                 selects.addAll(it)
                             }
 
                             if (!wasScreenVisitedBefore(context)) {
-                                //load cache and then update it via api call
+                                // load cache and then update it via api call
                                 setScreenAsVisited(context, true)
 
                                 // load cache from file then update cache via API
