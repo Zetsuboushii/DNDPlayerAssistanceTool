@@ -50,6 +50,9 @@ fun Search(context: Context) {
                         // test if screen is already on display and loaded
                         // if yes don't load cache again
                         if (!loaded) {
+
+                            // load selected spells to show them as marked
+
                             spellProvider.loadSelectedSpells {
                                 selects.clear()
                                 selects.addAll(it)
