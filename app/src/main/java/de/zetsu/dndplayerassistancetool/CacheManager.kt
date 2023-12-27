@@ -18,7 +18,6 @@ class CacheManager(private val context: Context) {
     }
 
     fun loadSpellDetailListFromCache(): List<SpellDetail>? {
-
         val json = getFullCacheFile().readText()
         val gson = Gson()
         val type = object : TypeToken<List<SpellDetail>>() {}.type

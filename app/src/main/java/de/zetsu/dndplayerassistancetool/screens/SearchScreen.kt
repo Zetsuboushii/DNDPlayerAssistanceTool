@@ -2,7 +2,6 @@ package de.zetsu.dndplayerassistancetool.screens
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,7 +14,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
@@ -27,14 +25,11 @@ import de.zetsu.dndplayerassistancetool.SpellProvider
 import de.zetsu.dndplayerassistancetool.composables.GoToTopButton
 import de.zetsu.dndplayerassistancetool.composables.SimpleSearchBar
 import de.zetsu.dndplayerassistancetool.composables.SpellCard
-import de.zetsu.dndplayerassistancetool.dataclasses.Spell
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 
 @Composable
 fun Search(context: Context) {
 
-    // API call
-    val spellList = remember { mutableListOf<Spell>() }
     var spellDetailList = remember { mutableListOf<SpellDetail>() }
     val spellProvider = SpellProvider(context)
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
@@ -52,47 +47,31 @@ fun Search(context: Context) {
             when (event) {
                 Lifecycle.Event.ON_CREATE -> {
                     try {
+                        // test if screen is already on display and loaded
+                        // if yes don't load cache again
                         if (!loaded) {
-
                             spellProvider.loadSelectedSpells {
                                 selects.clear()
                                 selects.addAll(it)
                             }
 
                             if (!wasScreenVisitedBefore(context)) {
-                                //load cache and then update it via api call
+                                // load cache and then update it via api call
                                 setScreenAsVisited(context, true)
-
-                                // load cache from file then update cache via API
-
-                                spellProvider.loadAllSpellDetailData(successCallback = {
+                                val spellDetails =
+                                    spellListCacheManager.loadSpellDetailListFromCache()
+                                spellDetails?.let {
                                     spellDetailList.clear()
-                                    spellDetailList.addAll(it)
+                                    spellDetailList.addAll(spellDetails.toMutableList())
                                     spellDetailList.sortBy { it.name }
                                     loaded = true
-
-                                }) {
-                                    // load data from cache if no network
-                                    val spellDetails =
-                                        spellListCacheManager.loadSpellDetailListFromCache()
-                                    // case: no internet without cache
-                                    if (spellDetails == null) {
-                                        Toast.makeText(
-                                            context,
-                                            "No cache available try loading again with an internet connection",
-                                            Toast.LENGTH_LONG
-                                        ).show()
-                                    } else {
-                                        //case: no internet with cache
-                                        spellDetailList.clear()
-                                        spellDetailList.addAll(spellDetails.toMutableList())
-                                        spellDetailList.sortBy { it.name }
-                                    }
                                 }
+
+                                spellProvider.updateCacheViaAPI()
+
                             } else {
                                 //load data from cache
                                 spellListCacheManager.loadSpellDetailListFromCache()
-                                    ?.toMutableStateList()
                                     ?.let {
                                         spellDetailList.clear()
                                         spellDetailList.addAll(it)
