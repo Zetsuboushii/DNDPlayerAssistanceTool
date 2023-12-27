@@ -35,7 +35,6 @@ data class SpellDetail(
                 if(json.has("level")){
                     json.optInt("level")
                 } else throw exception,
-
                 SpellDetailParser().toStringArrayList(json.optJSONArray("desc")),
                 SpellDetailParser().toStringArrayList(json.optJSONArray("higher_level")),
                 json.optString("range", null) ?: throw exception,
