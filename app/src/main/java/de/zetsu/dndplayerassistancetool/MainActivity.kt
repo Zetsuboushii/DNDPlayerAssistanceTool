@@ -30,6 +30,10 @@ import de.zetsu.dndplayerassistancetool.ui.theme.DndplayerassistancetoolTheme
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // write the backup spell list into file system
+        val cacheManager = CacheManager(this)
+        cacheManager.checkForWritingBackUpIntoCache()
+
         super.onCreate(savedInstanceState)
         setScreenAsVisited(applicationContext, false)
         setContent {
@@ -97,7 +101,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(Screen.Home.route) { Home() }
                             composable(Screen.Search.route) { Search(this@MainActivity) }
-                            composable(Screen.SpellBook.route) { SpellBook() }
+                            composable(Screen.SpellBook.route) { SpellBook(this@MainActivity) }
                         }
                     }
                 }
