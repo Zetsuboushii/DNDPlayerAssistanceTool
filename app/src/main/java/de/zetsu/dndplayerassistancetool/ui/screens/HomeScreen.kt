@@ -15,11 +15,7 @@ fun Home() {
     Column {
         TitleBlock()
 
-        Spacer(modifier = Modifier.size(100.dp))
-
-        HomeSearchBar()
-
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(75.dp))
 
         NextSessionCard()
     }
