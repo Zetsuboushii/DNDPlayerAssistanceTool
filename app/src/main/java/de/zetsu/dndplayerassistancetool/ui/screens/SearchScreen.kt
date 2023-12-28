@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -30,7 +31,7 @@ import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 @Composable
 fun Search(context: Context) {
 
-    var spellDetailList = remember { mutableListOf<SpellDetail>() }
+    val spellDetailList = remember { mutableStateListOf<SpellDetail>() }
     val spellProvider = SpellProvider(context)
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val spellListCacheManager = CacheManager(context)
@@ -112,24 +113,19 @@ fun Search(context: Context) {
 //--------------------------Mauer---------------------
 
     // spell cards + search bar
-
+    val searchTerm = remember { mutableStateOf<String>("") }
     LazyColumn(state = listState) {
-        item {
-            SimpleSearchBar(
-                onSearch = { search ->
-                    spellDetailList = spellDetailList.filter {
-                        it.name.startsWith(search, ignoreCase = true)
-                    }.toMutableList()
-                    for (i in 0 until spellDetailList.size) {
-                        Log.d("SearchResults", spellDetailList[i].name)
-                    }
-                }
-            )
-        }
         if (loaded) {
+            item {
+                SimpleSearchBar(
+                    onSearch = { search -> searchTerm.value = search }
+                )
+            }
             // spell cards
-            items(spellDetailList) {
-                Box() {
+            items(spellDetailList.filter {
+                it.name.startsWith(searchTerm.value, ignoreCase = true)
+            }.toList()) {
+                Box {
                     var expanded by remember { mutableStateOf(expands.contains(it)) }
                     var selected by remember { mutableStateOf(selects.contains(it)) }
                     SpellCard(
@@ -150,7 +146,6 @@ fun Search(context: Context) {
         }
     }
     Box(contentAlignment = Alignment.BottomEnd) {
-        // Row { AddToBookButton(onClick = {  }) }
         Row { GoToTopButton(coroutineScope = coroutineScope, lazyListState = listState) }
     }
 }
