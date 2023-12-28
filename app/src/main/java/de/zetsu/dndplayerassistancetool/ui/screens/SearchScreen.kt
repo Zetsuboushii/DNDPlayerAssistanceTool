@@ -39,7 +39,7 @@ fun Search(context: Context) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val expands = remember { mutableListOf<SpellDetail>() }
-    var selects = remember { mutableListOf<SpellDetail>() }
+    val selects = remember { mutableListOf<SpellDetail>() }
 
     var loaded by remember { mutableStateOf(false) }
 
@@ -110,8 +110,6 @@ fun Search(context: Context) {
         }
     }
 
-//--------------------------Mauer---------------------
-
     // spell cards + search bar
     val searchTerm = remember { mutableStateOf<String>("") }
     LazyColumn(state = listState) {
@@ -149,8 +147,6 @@ fun Search(context: Context) {
         Row { GoToTopButton(coroutineScope = coroutineScope, lazyListState = listState) }
     }
 }
-
-//--------------------Mauer---------------------------
 
 fun wasScreenVisitedBefore(context: Context): Boolean {
     val sharedPreferences =
