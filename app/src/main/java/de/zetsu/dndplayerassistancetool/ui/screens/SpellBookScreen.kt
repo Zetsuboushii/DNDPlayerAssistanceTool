@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -34,7 +35,7 @@ fun SpellBook(context: Context) {
     //val navController = rememberNavController()
 
     val spellProvider = SpellProvider(context)
-    var spellDetailList = remember { mutableListOf<SpellDetail>() }
+    var spellDetailList = remember { mutableStateListOf<SpellDetail>() }
     val expands = remember { mutableListOf<SpellDetail>() }
     val selects = remember { mutableListOf<SpellDetail>() }
     if (!loaded) {
@@ -78,8 +79,10 @@ fun SpellBook(context: Context) {
                     if (expanded) expands.add(spell) else expands.remove(spell)
 
                 }, selected = selected, onLongClick = {
-                    selected = !selected
-                    if (selected) selects.add(spell) else selects.remove(spell)
+                    spellDetailList.remove(spell)
+                    //TODO: all spells get deleted
+                    // spellProvider.saveSelectedIndices(selects)
+                    Log.d("SpellBook", selects.toString())
                 })
 
             }
