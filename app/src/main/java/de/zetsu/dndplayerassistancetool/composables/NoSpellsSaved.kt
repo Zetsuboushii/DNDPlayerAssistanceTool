@@ -132,13 +132,13 @@ fun NoSpellsSaved() {
                                         color = Color.DarkGray
                                     )
                                 )
-
+                                //TODO: change formatierung to not be static
                                 {
                                     Divider(Modifier.padding(10.dp), thickness = 2.dp)
                                     appendLine("1. For starters,\n  ")
                                     appendLine("   - I contain a description when I expand, like all our spells.\n")
                                     appendLine("2. To save a spell:\n")
-                                    appendLine("   - Click on the + icon or go to the spell search button on the bottom.")
+                                    appendLine("   - Go to the spell search button on the bottom.")
                                     appendLine("   - With a long tap (press down for 2 seconds), you can automatically save the spell.")
 
                                 }

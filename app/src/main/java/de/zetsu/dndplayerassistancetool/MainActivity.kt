@@ -22,10 +22,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import de.zetsu.dndplayerassistancetool.Screen.SpellBook
-import de.zetsu.dndplayerassistancetool.screens.Home
-import de.zetsu.dndplayerassistancetool.screens.Search
-import de.zetsu.dndplayerassistancetool.screens.SpellBook
-import de.zetsu.dndplayerassistancetool.screens.setScreenAsVisited
 import de.zetsu.dndplayerassistancetool.ui.screens.Home
 import de.zetsu.dndplayerassistancetool.ui.screens.Search
 import de.zetsu.dndplayerassistancetool.ui.screens.SpellBook
