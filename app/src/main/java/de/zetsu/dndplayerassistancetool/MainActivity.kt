@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import de.zetsu.dndplayerassistancetool.Screen.SpellBook
 import de.zetsu.dndplayerassistancetool.screens.Home
 import de.zetsu.dndplayerassistancetool.screens.Search
 import de.zetsu.dndplayerassistancetool.screens.SpellBook
@@ -38,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 val items = listOf(
                     Screen.Home,
                     Screen.Search,
-                    Screen.SpellBook
+                    SpellBook
                 )
 
                 // A surface container using the 'background' color from the theme
@@ -97,7 +98,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(Screen.Home.route) { Home() }
                             composable(Screen.Search.route) { Search(this@MainActivity) }
-                            composable(Screen.SpellBook.route) { SpellBook(this@MainActivity) }
+                            composable(SpellBook.route) { SpellBook(this@MainActivity) }
                         }
                     }
                 }

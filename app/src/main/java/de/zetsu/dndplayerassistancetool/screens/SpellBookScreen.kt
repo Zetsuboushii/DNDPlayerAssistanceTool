@@ -6,12 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,23 +18,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import de.zetsu.dndplayerassistancetool.SpellProvider
 import de.zetsu.dndplayerassistancetool.composables.GoToTopButton
 import de.zetsu.dndplayerassistancetool.composables.HeaderSection
+import de.zetsu.dndplayerassistancetool.composables.NoSpellsSaved
 import de.zetsu.dndplayerassistancetool.composables.SpellCard
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
+
 
 @Composable
 fun SpellBook(context: Context) {
     var loaded by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+    //val navController = rememberNavController()
 
     val spellProvider = SpellProvider(context)
     var spellDetailList = remember { mutableListOf<SpellDetail>() }
-    val expands = remember {mutableListOf<SpellDetail>() }
-    val selects = remember {mutableListOf<SpellDetail>() }
+    val expands = remember { mutableListOf<SpellDetail>() }
+    val selects = remember { mutableListOf<SpellDetail>() }
     if (!loaded) {
         loaded = true
         spellProvider.loadSelectedSpells {
@@ -46,20 +45,25 @@ fun SpellBook(context: Context) {
         }
     }
     var moin = mutableListOf<String>()
-    for (i in 0 until spellDetailList.size) {
-        moin.add(spellDetailList[i].name)
-        Column {
-            Text(text = moin.toString())
-        }
-    }
+
     Log.d("SpellBook", spellDetailList.toString())
 
 
-    HeaderSection()
+    // not loading picture if spells are saved into the spellbook
+    if (spellDetailList.isEmpty()) {
+        Column {
+            HeaderSection()
+            NoSpellsSaved()
+        }
+    }
 
 
-    Spacer(modifier = Modifier.size(100.dp))
     LazyColumn(state = listState) {
+        item {
+            HeaderSection()
+
+        }
+
         // Display selected spells
         items(spellDetailList) { spell ->
             Box(modifier = Modifier.background(Color.White)) {
@@ -82,8 +86,7 @@ fun SpellBook(context: Context) {
         }
     }
     Box(contentAlignment = Alignment.BottomEnd) {
-        // Row { AddToBookButton(onClick = {  }) }
+        //Row { AddToBookButton(onClick = {navController.navigate(Screen.Search.route) }) }
         Row { GoToTopButton(coroutineScope = coroutineScope, lazyListState = listState) }
     }
-
 }

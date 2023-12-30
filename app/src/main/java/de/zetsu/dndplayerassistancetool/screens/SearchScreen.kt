@@ -30,6 +30,7 @@ import de.zetsu.dndplayerassistancetool.composables.SpellCard
 import de.zetsu.dndplayerassistancetool.dataclasses.Spell
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 
+
 @Composable
 fun Search(context: Context) {
 
@@ -184,7 +185,6 @@ fun Search(context: Context) {
         }
     }
     Box(contentAlignment = Alignment.BottomEnd) {
-        // Row { AddToBookButton(onClick = {  }) }
         Row { GoToTopButton(coroutineScope = coroutineScope, lazyListState = listState) }
     }
 }
