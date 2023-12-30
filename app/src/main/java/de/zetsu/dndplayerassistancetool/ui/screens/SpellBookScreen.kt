@@ -1,4 +1,4 @@
-package de.zetsu.dndplayerassistancetool.screens
+package de.zetsu.dndplayerassistancetool.ui.screens
 
 import android.content.Context
 import android.util.Log

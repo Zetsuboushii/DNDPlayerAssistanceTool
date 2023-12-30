@@ -1,4 +1,4 @@
-package de.zetsu.dndplayerassistancetool.screens
+package de.zetsu.dndplayerassistancetool.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
@@ -15,11 +15,7 @@ fun Home() {
     Column {
         TitleBlock()
 
-        Spacer(modifier = Modifier.size(100.dp))
-
-        HomeSearchBar()
-
-        Spacer(modifier = Modifier.size(20.dp))
+        Spacer(modifier = Modifier.size(75.dp))
 
         NextSessionCard()
     }

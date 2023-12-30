@@ -25,7 +25,7 @@
         </activity>
 
         <receiver
-            android:name=".WidgetReceiver"
+            android:name=".widgets.WidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
