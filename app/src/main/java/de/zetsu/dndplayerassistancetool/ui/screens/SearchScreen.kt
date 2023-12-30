@@ -28,6 +28,7 @@ import de.zetsu.dndplayerassistancetool.composables.SimpleSearchBar
 import de.zetsu.dndplayerassistancetool.composables.SpellCard
 import de.zetsu.dndplayerassistancetool.dataclasses.SpellDetail
 
+
 @Composable
 fun Search(context: Context) {
 
