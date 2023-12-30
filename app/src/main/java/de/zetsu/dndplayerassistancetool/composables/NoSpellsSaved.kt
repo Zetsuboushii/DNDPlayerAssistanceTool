@@ -73,19 +73,8 @@ fun NoSpellsSaved() {
                         )
                     }
                 }
-            }
         }
-        guideAddSpell()
-    }
 
-
-    @Composable
-    fun guideAddSpell() {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
             item {
                 var expanded by remember { mutableStateOf(false) }
 
@@ -132,15 +121,16 @@ fun NoSpellsSaved() {
                                         color = Color.DarkGray
                                     )
                                 )
-                                //TODO: change formatierung to not be static
+
                                 {
                                     Divider(Modifier.padding(10.dp), thickness = 2.dp)
-                                    appendLine("1. For starters,\n  ")
-                                    appendLine("   - I contain a description when I expand, like all our spells.\n")
+                                    appendLine("1. For starters:\n ")
+                                    appendLine("I contain a description when I expand, like all our spells.\n")
                                     appendLine("2. To save a spell:\n")
-                                    appendLine("   - Go to the spell search button on the bottom.")
-                                    appendLine("   - With a long tap (press down for 2 seconds), you can automatically save the spell.")
-
+                                    appendLine("Go to the Spell Search Button on the bottom.")
+                                    appendLine("With a long tap on a spell (hold 2 sec.), you save it.\n")
+                                    appendLine("3. To delete a spell:\n")
+                                    appendLine("With a long tap in the Spell Book, you delete the spell.")
                                 }
                             },
                             modifier = Modifier.padding(14.dp)
@@ -149,4 +139,6 @@ fun NoSpellsSaved() {
                 }
             }
         }
-    }
+
+
+}
