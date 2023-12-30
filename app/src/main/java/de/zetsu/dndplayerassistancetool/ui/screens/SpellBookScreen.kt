@@ -32,12 +32,10 @@ fun SpellBook(context: Context) {
     var loaded by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    //val navController = rememberNavController()
 
     val spellProvider = SpellProvider(context)
     var spellDetailList = remember { mutableStateListOf<SpellDetail>() }
     val expands = remember { mutableListOf<SpellDetail>() }
-    val selects = remember { mutableListOf<SpellDetail>() }
     if (!loaded) {
         loaded = true
         spellProvider.loadSelectedSpells {
@@ -80,9 +78,7 @@ fun SpellBook(context: Context) {
 
                 }, selected = selected, onLongClick = {
                     spellDetailList.remove(spell)
-                    //TODO: all spells get deleted
-                    // spellProvider.saveSelectedIndices(selects)
-                    Log.d("SpellBook", selects.toString())
+                    spellProvider.saveSelectedIndices(spellDetailList)
                 })
 
             }
