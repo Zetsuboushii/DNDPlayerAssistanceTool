@@ -16,14 +16,12 @@ import java.io.FileNotFoundException
 
 class SpellProvider(private val context: Context) {
 
-    class NoSpellsSelectedException : Exception()
 
     companion object {
         private fun filterByIndex(
             indices: List<String>,
             spellDetails: List<SpellDetail>
         ): List<SpellDetail> {
-            if (indices.isEmpty()) throw NoSpellsSelectedException()
             return spellDetails.filter { indices.contains(it.index) }
         }
     }
@@ -34,6 +32,10 @@ class SpellProvider(private val context: Context) {
     val cacheManager = CacheManager(context)
     var spellList = mutableListOf<Spell>()
     var spellDetailList = mutableListOf<SpellDetail>()
+
+    /** make API call to get the full list of spells and their indices
+    used to make detailed spell API calls later on */
+
     fun loadSpellList(callback: (List<Spell>) -> Unit, errorCallback: (Exception) -> Unit) {
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url, null,
@@ -48,14 +50,13 @@ class SpellProvider(private val context: Context) {
             },
             { error ->
                 Log.d("APILog", "Error loading spell list: ${error.message}")
-                handleError(error)
                 errorCallback.invoke(error)
             })
 
         queue.add(jsonRequest)
     }
 
-    // create API call to get detailed spell information's based on its index
+    /** create API call to get detailed spell information's based on its index for one spell */
     fun loadSpellDetails(index: String, callback: (SpellDetail) -> Unit) {
         val jsonRequest = JsonObjectRequest(
             Request.Method.GET, url.plus("/").plus(index), null,
@@ -77,6 +78,7 @@ class SpellProvider(private val context: Context) {
 
     }
 
+    /** get list of all detailed spells */
     fun loadAllSpellDetails(callback: (List<SpellDetail>) -> Unit) {
         Log.d("APILoadFlag", "started api calls")
         var spellDetailList = mutableListOf<SpellDetail>()
@@ -94,6 +96,14 @@ class SpellProvider(private val context: Context) {
                     )
                 }
             }
+        }
+    }
+
+    fun updateCacheViaAPI() {
+        loadAllSpellDetailData({ spellDetails ->
+            cacheManager.saveSpellListToCache(spellDetails)
+        }) {
+            handleError(it)
         }
     }
 
@@ -133,8 +143,6 @@ class SpellProvider(private val context: Context) {
             cacheManager.loadSpellDetailListFromCache()?.let {
                 callback.invoke(filterByIndex(indices ?: listOf(), it))
             }
-        } catch (exception: NoSpellsSelectedException) {
-            handleError(exception)
         } catch (exception: Exception) {
             loadAllSpellDetailData(successCallback = {
                 callback.invoke(filterByIndex(indices ?: listOf(), it))
@@ -142,18 +150,15 @@ class SpellProvider(private val context: Context) {
                 handleError(it)
             }
         }
-
     }
 
     fun handleError(exception: Exception) {
         val errorMessage: String = when (exception) {
-            is NoConnectionError -> "No internet connection, load from cache"
+            is NoConnectionError -> "Can't update spell list try restarting the app with an internet connection"
             is FileNotFoundException -> "No cache available try loading again with an internet connection"
-            is NoSpellsSelectedException -> "No spells were selected go to Spell Search and select some spells"
             else -> "Error occurred: ${exception.message}"
         }
         Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
     }
-
 
 }

@@ -2,5 +2,5 @@
     android:initialLayout="@layout/glance_default_loading_layout"
     android:targetCellWidth="3"
     android:targetCellHeight="1"
-    android:maxResizeWidth="300dp"
-    android:maxResizeHeight="200dp"></appwidget-provider>
+    android:maxResizeWidth="1000dp"
+    android:maxResizeHeight="200dp" />

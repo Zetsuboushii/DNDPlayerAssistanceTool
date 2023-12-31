@@ -2,7 +2,7 @@ package de.zetsu.dndplayerassistancetool.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,44 +19,44 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.zetsu.dndplayerassistancetool.R
 
+
+
+
 @Composable
 fun HeaderSection() {
     val almendraFontFamily = FontFamily(
         Font(R.font.almendra_sc, FontWeight.Normal)
     )
 
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
+        val painter0: Painter = painterResource(id = R.drawable.spell_book_1_)
+        Image(
+            painter = painter0,
+            contentDescription = null,
+            modifier = Modifier
+                .size(85.dp)
+                .padding(10.dp)
+        )
+
         Text(
-            text = "Welcome to \n Your Spell Book!",
+            text = "Welcome to \n  Your Spell Book !",
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = almendraFontFamily,
             modifier = Modifier
-                .padding(8.dp)
-                .align(Alignment.CenterHorizontally)
-                //.border(1.dp, colorLiteral(0xFF6650a4) )
-        )
+                .padding(10.dp)
 
-        // Load image from the drawable resource
-        val painter: Painter = painterResource(id = R.drawable.spellbook1)
-
-        Image(
-            painter = painter,
-            contentDescription = null,
-            modifier = Modifier
-                .size(250.dp)
-                .padding(16.dp)
-                .align(Alignment.CenterHorizontally)
         )
     }
-}
 
+
+}
 
 
 

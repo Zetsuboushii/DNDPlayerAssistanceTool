@@ -1,4 +1,4 @@
-package de.zetsu.dndplayerassistancetool
+package de.zetsu.dndplayerassistancetool.widgets
 
 import android.content.Context
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +27,8 @@ import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
+import de.zetsu.dndplayerassistancetool.R
+import de.zetsu.dndplayerassistancetool.fetchData
 
 class Widget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -41,34 +43,34 @@ class Widget : GlanceAppWidget() {
 
             Box(
                 modifier = GlanceModifier
-                    .width(300.dp)
+                    .width(150.dp)
                     .background(Color.White)
             ) {
                 Column(
                     modifier = GlanceModifier
                         .fillMaxWidth()
-                        .padding(20.dp)
+                        .padding(10.dp)
                 ) {
                     Text(
                         text = "Next D&D Session on",
-                        style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                        style = TextStyle(fontSize = 10.sp, fontWeight = FontWeight.Bold),
                     )
                 }
                 Column(
                     modifier = GlanceModifier
                         .fillMaxWidth()
-                        .padding(top = 60.dp),
+                        .padding(top = 30.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Row {
                         Image(
                             provider = ImageProvider(R.drawable.ic_event_fill),
                             contentDescription = null,
-                            modifier = GlanceModifier.size(30.dp)
+                            modifier = GlanceModifier.size(15.dp)
                         )
                         Text(
                             text = nextSession,
-                            style = TextStyle(fontSize = 25.sp)
+                            style = TextStyle(fontSize = 10.sp)
                         )
                     }
                 }
